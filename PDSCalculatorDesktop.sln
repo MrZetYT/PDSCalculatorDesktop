@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDSCalculatorDesktop", "PDSCalculatorDesktop.csproj", "{1CFD3E4B-8BDC-4E9A-B1D3-255D0B7BE8F3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1CFD3E4B-8BDC-4E9A-B1D3-255D0B7BE8F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CFD3E4B-8BDC-4E9A-B1D3-255D0B7BE8F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CFD3E4B-8BDC-4E9A-B1D3-255D0B7BE8F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CFD3E4B-8BDC-4E9A-B1D3-255D0B7BE8F3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {02F4CFA3-F713-4D4C-9101-8F2D8FC70C25}
+	EndGlobalSection
+EndGlobal
