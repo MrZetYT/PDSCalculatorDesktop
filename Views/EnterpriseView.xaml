@@ -1,0 +1,125 @@
+﻿<Window x:Class="PDSCalculatorDesktop.Views.EnterpriseView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PDSCalculatorDesktop.Views"
+        mc:Ignorable="d"
+        Title="Управление предприятиями" 
+        Height="600" 
+        Width="900"
+        WindowStartupLocation="CenterScreen">
+
+    <!-- Основной контейнер с отступами -->
+    <Grid Margin="10">
+        <!-- Определяем строки сетки -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Строка для поиска -->
+            <RowDefinition Height="*"/>
+            <!-- Строка для таблицы (занимает все место) -->
+            <RowDefinition Height="Auto"/>
+            <!-- Строка для кнопок -->
+        </Grid.RowDefinitions>
+
+        <!-- ============================================ -->
+        <!-- СТРОКА 0: Поиск -->
+        <!-- ============================================ -->
+        <GroupBox Grid.Row="0" Header="Поиск" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Поле ввода текста поиска -->
+                <TextBox Grid.Column="0"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalContentAlignment="Center"
+                         Padding="5"
+                         FontSize="14"/>
+
+                <!-- Иконка поиска (просто для красоты) -->
+                <TextBlock Grid.Column="1"
+                           Text="🔍"
+                           VerticalAlignment="Center"
+                           Margin="10,0,0,0"
+                           FontSize="20"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- ============================================ -->
+        <!-- СТРОКА 1: Таблица предприятий -->
+        <!-- ============================================ -->
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Enterprises}"
+                  SelectedItem="{Binding SelectedEnterprise}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  GridLinesVisibility="All"
+                  HeadersVisibility="Column"
+                  AlternatingRowBackground="LightGray"
+                  FontSize="13"
+                  Margin="0,0,0,10">
+
+            <!-- Определяем колонки вручную -->
+            <DataGrid.Columns>
+                <!-- Колонка: Код предприятия -->
+                <DataGridTextColumn Header="Код" 
+                                    Binding="{Binding Code}" 
+                                    Width="150"/>
+
+                <!-- Колонка: Название предприятия -->
+                <DataGridTextColumn Header="Название" 
+                                    Binding="{Binding Name}" 
+                                    Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- ============================================ -->
+        <!-- СТРОКА 2: Кнопки управления -->
+        <!-- ============================================ -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Left">
+
+            <!-- Кнопка: Добавить -->
+            <Button Content="➕ Добавить"
+                    Command="{Binding AddCommand}"
+                    Width="120"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    FontSize="13"
+                    Cursor="Hand"/>
+
+            <!-- Кнопка: Изменить -->
+            <Button Content="✏️ Изменить"
+                    Command="{Binding EditCommand}"
+                    Width="120"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    FontSize="13"
+                    Cursor="Hand"/>
+
+            <!-- Кнопка: Удалить -->
+            <Button Content="🗑️ Удалить"
+                    Command="{Binding DeleteCommand}"
+                    Width="120"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    FontSize="13"
+                    Cursor="Hand"/>
+
+            <!-- Кнопка: Обновить -->
+            <Button Content="🔄 Обновить"
+                    Command="{Binding RefreshCommand}"
+                    Width="120"
+                    Height="35"
+                    FontSize="13"
+                    Cursor="Hand"/>
+        </StackPanel>
+    </Grid>
+</Window>

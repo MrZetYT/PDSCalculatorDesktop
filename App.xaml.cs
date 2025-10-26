@@ -1,20 +1,21 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using System.Data;
 using System.IO;
 using System.Windows;
 using PDSCalculatorDesktop.Data;
+using PDSCalculatorDesktop.Services;
 using Microsoft.EntityFrameworkCore;
+using PDSCalculatorDesktop.Repositories.Interfaces;
+using PDSCalculatorDesktop.Repositories;
+using PDSCalculatorDesktop.ViewModels;
+using PDSCalculatorDesktop.Views;
 
 namespace PDSCalculatorDesktop
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         private ServiceProvider? _serviceProvider;
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -27,15 +28,27 @@ namespace PDSCalculatorDesktop
 
             var services = new ServiceCollection();
 
+            // Регистрация DbContext
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddSingleton<MainWindow>();
+            // Регистрация Repository
+            services.AddScoped<IEnterpriseRepository, EnterpriseRepository>();
+
+            // Регистрация Services
+            services.AddScoped<IEnterpriseService, EnterpriseService>();
+
+            // Регистрация ViewModels
+            services.AddTransient<EnterpriseViewModel>();
+
+            // Регистрация Views
+            services.AddTransient<EnterpriseView>();
 
             _serviceProvider = services.BuildServiceProvider();
 
-            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-            mainWindow.Show();
+            // Запускаем окно управления предприятиями вместо MainWindow
+            var enterpriseView = _serviceProvider.GetRequiredService<EnterpriseView>();
+            enterpriseView.Show();
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -44,5 +57,4 @@ namespace PDSCalculatorDesktop
             base.OnExit(e);
         }
     }
-
 }
