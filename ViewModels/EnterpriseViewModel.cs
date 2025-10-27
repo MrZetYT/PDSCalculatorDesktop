@@ -7,6 +7,7 @@ using System.Windows.Input;
 using PDSCalculatorDesktop.Commands;
 using PDSCalculatorDesktop.Models;
 using PDSCalculatorDesktop.Services;
+using PDSCalculatorDesktop.Views;
 
 namespace PDSCalculatorDesktop.ViewModels
 {
@@ -102,18 +103,44 @@ namespace PDSCalculatorDesktop.ViewModels
 
         private void AddEnterprise()
         {
-            // TODO: Открыть окно добавления предприятия
-            MessageBox.Show("Функция добавления предприятия будет реализована далее",
-                "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            var window = new EnterpriseEditView();
+
+            var viewModel = new EnterpriseEditViewModel(
+                _enterpriseService,
+                window,
+                null
+            );
+
+            window.DataContext = viewModel;
+
+            var result = window.ShowDialog();
+
+            if(result == true)
+            {
+                LoadEnterprisesAsync();
+            }
         }
 
         private void EditEnterprise()
         {
             if (SelectedEnterprise == null) return;
 
-            // TODO: Открыть окно редактирования с данными SelectedEnterprise
-            MessageBox.Show($"Редактирование предприятия: {SelectedEnterprise.Name}",
-                "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            var window = new EnterpriseEditView();
+
+            var viewModel = new EnterpriseEditViewModel(
+                _enterpriseService,
+                window,
+                SelectedEnterprise
+            );
+
+            window.DataContext = viewModel;
+
+            var result = window.ShowDialog();
+
+            if(result == true)
+            {
+                LoadEnterprisesAsync();
+            }
         }
 
         private async void DeleteEnterpriseAsync()
