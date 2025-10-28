@@ -34,9 +34,13 @@ namespace PDSCalculatorDesktop
 
             // Регистрация Repository
             services.AddScoped<IEnterpriseRepository, EnterpriseRepository>();
+            services.AddScoped<IDischargeRepository, DischargeRepository>();
+            services.AddScoped<IControlPointRepository, ControlPointRepository>();
+            services.AddScoped<ITechnicalParametersRepository, TechnicalParametersRepository>();
 
             // Регистрация Services
             services.AddScoped<IEnterpriseService, EnterpriseService>();
+            services.AddScoped<IDischargeService, DischargeService>();
 
             // Регистрация ViewModels
             services.AddTransient<EnterpriseViewModel>();

@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PDSCalculatorDesktop.Data;
 using PDSCalculatorDesktop.Models;
+using PDSCalculatorDesktop.Repositories.Interfaces;
 
 namespace PDSCalculatorDesktop.Repositories
 {
-    public class DischargeRepository : Repository<Discharge>
+    public class DischargeRepository : Repository<Discharge>, IDischargeRepository
     {
         public DischargeRepository(ApplicationDbContext context) : base(context)
         {
@@ -36,7 +37,7 @@ namespace PDSCalculatorDesktop.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Measurement>> GetNoramtiveIndicatorsByDischargeAsync(int dischargeId)
+        public async Task<IEnumerable<Measurement>> GetNormativeIndicatorsByDischargeAsync(int dischargeId)
         {
             var discharge = await _context.Discharges
                 .Include(n => n.ControlPoint)
@@ -53,6 +54,21 @@ namespace PDSCalculatorDesktop.Repositories
                 .Include(n => n.Substance)
                 .OrderBy(n => n.Substance.Name)
                 .ThenBy(n => n.MeasurementType)
+                .ToListAsync();
+        }
+
+        public async Task<bool> HasTechnicalParametersAsync(int dischargeId)
+        {
+            return await _context.TechnicalParameters
+                .AnyAsync(d => d.DischargeId == dischargeId);
+        }
+
+        public async Task<IEnumerable<TechnicalParameters>> GetTechnicalParametersAsync(int dischargeId)
+        {
+            return await _context.TechnicalParameters
+                .Where(n=> n.DischargeId == dischargeId)
+                .Include(n=>n.Discharge)
+                .OrderBy(n=> n.ValidFrom)
                 .ToListAsync();
         }
     }
