@@ -44,18 +44,20 @@ namespace PDSCalculatorDesktop
             services.AddScoped<IControlPointService, ControlPointService>();
 
             // Регистрация ViewModels
+            services.AddTransient<MainViewModel>();
             services.AddTransient<EnterpriseViewModel>();
             services.AddTransient<DischargeViewModel>();
 
             // Регистрация Views
+            services.AddTransient<MainWindow>();
             services.AddTransient<EnterpriseView>();
             services.AddTransient<DischargeView>();
 
             _serviceProvider = services.BuildServiceProvider();
 
             // Запускаем окно управления предприятиями вместо MainWindow
-            var enterpriseView = _serviceProvider.GetRequiredService<DischargeView>();
-            enterpriseView.Show();
+            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            mainWindow.Show();
         }
 
         protected override void OnExit(ExitEventArgs e)

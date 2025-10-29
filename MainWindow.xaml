@@ -3,10 +3,384 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PDSCalculatorDesktop"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Система расчета ПДС сточных вод" 
+        Height="750" 
+        Width="920"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
 
+    <Grid>
+        <!-- Фоновый градиент -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#E3F2FD" Offset="0"/>
+                <GradientStop Color="#BBDEFB" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Основной контент -->
+        <Grid Margin="40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Заголовок -->
+                <RowDefinition Height="*"/>
+                <!-- Карточки меню -->
+                <RowDefinition Height="Auto"/>
+                <!-- Футер -->
+            </Grid.RowDefinitions>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 0: Заголовок приложения -->
+            <!-- ============================================ -->
+            <materialDesign:Card Grid.Row="0" 
+                                Padding="25"
+                                Margin="0,0,0,30"
+                                UniformCornerRadius="15"
+                                Background="White"
+                                materialDesign:ElevationAssist.Elevation="Dp8">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <materialDesign:PackIcon Kind="WaterCircle" 
+                                                Width="48" 
+                                                Height="48"
+                                                Foreground="#1976D2"
+                                                VerticalAlignment="Center"/>
+                        <TextBlock Text="Система экологического мониторинга"
+                                  Style="{StaticResource MaterialDesignHeadline4TextBlock}"
+                                  Foreground="#1976D2"
+                                  VerticalAlignment="Center"
+                                  Margin="15,0,0,0"/>
+                    </StackPanel>
+                    <TextBlock Text="Расчет предельно-допустимых сбросов (ПДС) сточных вод предприятий"
+                              Style="{StaticResource MaterialDesignBody1TextBlock}"
+                              Foreground="#546E7A"
+                              HorizontalAlignment="Center"
+                              Margin="0,10,0,0"/>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 1: Карточки меню -->
+            <!-- ============================================ -->
+            <ScrollViewer Grid.Row="1" 
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Disabled">
+                <UniformGrid Columns="2" 
+                            Rows="3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top">
+
+                    <!-- Карточка: Управление предприятиями -->
+                    <materialDesign:Card Margin="15"
+                                    Width="380"
+                                    Height="100"
+                                    UniformCornerRadius="15"
+                                    Cursor="Hand"
+                                    materialDesign:ElevationAssist.Elevation="Dp4"
+                                    MouseDown="Card_MouseDown"
+                                    Tag="OpenEnterprisesCommand">
+                        <materialDesign:Card.Style>
+                            <Style TargetType="materialDesign:Card">
+                                <Setter Property="Background" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F5F5F5"/>
+                                        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp8"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </materialDesign:Card.Style>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" 
+                                   Background="#7B3AB7" 
+                                   Width="80"
+                                   VerticalAlignment="Stretch">
+                                <materialDesign:PackIcon Kind="Factory" 
+                                                        Width="40" 
+                                                        Height="40"
+                                                        Foreground="White"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       Margin="20,0,0,0">
+                                <TextBlock Text="Предприятия"
+                                          FontSize="18"
+                                          FontWeight="SemiBold"
+                                          Foreground="#7B3AB7"/>
+                                <TextBlock Text="Добавление и редактирование"
+                                          FontSize="12"
+                                          Foreground="Gray"
+                                          Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </materialDesign:Card>
+
+                    <!-- Карточка: Управление выпусками -->
+                    <materialDesign:Card Margin="15"
+                                    Width="380"
+                                    Height="100"
+                                    UniformCornerRadius="15"
+                                    Cursor="Hand"
+                                    materialDesign:ElevationAssist.Elevation="Dp4"
+                                    MouseDown="Card_MouseDown"
+                                    Tag="OpenDischargesCommand">
+                        <materialDesign:Card.Style>
+                            <Style TargetType="materialDesign:Card">
+                                <Setter Property="Background" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F5F5F5"/>
+                                        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp8"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </materialDesign:Card.Style>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" 
+                                   Background="#1976D2" 
+                                   Width="80"
+                                   VerticalAlignment="Stretch">
+                                <materialDesign:PackIcon Kind="WaterOutline" 
+                                                        Width="40" 
+                                                        Height="40"
+                                                        Foreground="White"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       Margin="20,0,0,0">
+                                <TextBlock Text="Выпуски сточных вод"
+                                          FontSize="18"
+                                          FontWeight="SemiBold"
+                                          Foreground="#1976D2"/>
+                                <TextBlock Text="Управление выпусками"
+                                          FontSize="12"
+                                          Foreground="Gray"
+                                          Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </materialDesign:Card>
+
+                    <!-- Карточка: Контрольные створы -->
+                    <materialDesign:Card Margin="15"
+                                    Width="380"
+                                    Height="100"
+                                    UniformCornerRadius="15"
+                                    Cursor="Hand"
+                                    materialDesign:ElevationAssist.Elevation="Dp4"
+                                    MouseDown="Card_MouseDown"
+                                    Tag="OpenControlPointsCommand">
+                        <materialDesign:Card.Style>
+                            <Style TargetType="materialDesign:Card">
+                                <Setter Property="Background" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F5F5F5"/>
+                                        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp8"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </materialDesign:Card.Style>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" 
+                                   Background="#00897B" 
+                                   Width="80"
+                                   VerticalAlignment="Stretch">
+                                <materialDesign:PackIcon Kind="MapMarker" 
+                                                        Width="40" 
+                                                        Height="40"
+                                                        Foreground="White"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       Margin="20,0,0,0">
+                                <TextBlock Text="Контрольные створы"
+                                          FontSize="18"
+                                          FontWeight="SemiBold"
+                                          Foreground="#00897B"/>
+                                <TextBlock Text="Точки мониторинга"
+                                          FontSize="12"
+                                          Foreground="Gray"
+                                          Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </materialDesign:Card>
+
+                    <!-- Карточка: Загрязняющие вещества -->
+                    <materialDesign:Card Margin="15"
+                                    Width="380"
+                                    Height="100"
+                                    UniformCornerRadius="15"
+                                    Cursor="Hand"
+                                    materialDesign:ElevationAssist.Elevation="Dp4"
+                                    Opacity="0.6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" 
+                               Background="#F57C00" 
+                               Width="80">
+                                <materialDesign:PackIcon Kind="Flask" 
+                                                    Width="40" 
+                                                    Height="40"
+                                                    Foreground="White"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" 
+                                   VerticalAlignment="Center"
+                                   Margin="20,0,0,0">
+                                <TextBlock Text="Загрязняющие вещества"
+                                      FontSize="18"
+                                      FontWeight="SemiBold"
+                                      Foreground="#F57C00"/>
+                                <TextBlock Text="В разработке"
+                                      FontSize="12"
+                                      Foreground="Gray"
+                                      Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </materialDesign:Card>
+
+                    <!-- Карточка: Расчет ПДС -->
+                    <materialDesign:Card Margin="15"
+                                    Width="380"
+                                    Height="100"
+                                    UniformCornerRadius="15"
+                                    Cursor="Hand"
+                                    materialDesign:ElevationAssist.Elevation="Dp4"
+                                    Opacity="0.6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" 
+                               Background="#C62828" 
+                               Width="80">
+                                <materialDesign:PackIcon Kind="Calculator" 
+                                                    Width="40" 
+                                                    Height="40"
+                                                    Foreground="White"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" 
+                                   VerticalAlignment="Center"
+                                   Margin="20,0,0,0">
+                                <TextBlock Text="Расчет ПДС"
+                                      FontSize="18"
+                                      FontWeight="SemiBold"
+                                      Foreground="#C62828"/>
+                                <TextBlock Text="В разработке"
+                                      FontSize="12"
+                                      Foreground="Gray"
+                                      Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </materialDesign:Card>
+
+                    <!-- Карточка: Отчеты -->
+                    <materialDesign:Card Margin="15"
+                                    Width="380"
+                                    Height="100"
+                                    UniformCornerRadius="15"
+                                    Cursor="Hand"
+                                    materialDesign:ElevationAssist.Elevation="Dp4"
+                                    Opacity="0.6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" 
+                               Background="#6A1B9A" 
+                               Width="80">
+                                <materialDesign:PackIcon Kind="FileDocument" 
+                                                    Width="40" 
+                                                    Height="40"
+                                                    Foreground="White"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" 
+                                   VerticalAlignment="Center"
+                                   Margin="20,0,0,0">
+                                <TextBlock Text="Отчеты"
+                                      FontSize="18"
+                                      FontWeight="SemiBold"
+                                      Foreground="#6A1B9A"/>
+                                <TextBlock Text="В разработке"
+                                      FontSize="12"
+                                      Foreground="Gray"
+                                      Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </materialDesign:Card>
+                </UniformGrid>
+            </ScrollViewer>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 2: Футер с кнопкой выхода -->
+            <!-- ============================================ -->
+            <StackPanel Grid.Row="2" 
+                       Orientation="Horizontal" 
+                       HorizontalAlignment="Center"
+                       Margin="0,20,0,0">
+                <Button Command="{Binding ExitCommand}"
+                       Style="{StaticResource MaterialDesignRaisedButton}"
+                       Width="150"
+                       Height="40"
+                       Background="#757575"
+                       BorderBrush="#757575"
+                       materialDesign:ButtonAssist.CornerRadius="10">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ExitToApp" 
+                                                Width="20" 
+                                                Height="20"
+                                                VerticalAlignment="Center"/>
+                        <TextBlock Text="Выход" 
+                                  Margin="8,0,0,0"
+                                  VerticalAlignment="Center"
+                                  FontSize="13"
+                                  FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
