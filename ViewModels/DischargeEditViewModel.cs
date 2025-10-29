@@ -8,12 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace PDSCalculatorDesktop.ViewModels
 {
     public class DischargeEditViewModel : ViewModelBase
     {
         private readonly IDischargeService _dischargeService;
+        private readonly IEnterpriseService _enterpriseService;
+        private readonly IControlPointService _controlPointService;
         private readonly Discharge? _originalDischarge;
         private readonly Window _window;
 
@@ -22,7 +25,48 @@ namespace PDSCalculatorDesktop.ViewModels
         private DateTime _registrationAt = DateTime.MinValue;
         private int _enterpriseId = 0;
         private int _controlPointId = 0;
+        private ObservableCollection<Enterprise> _enterprises = new();
+        private ObservableCollection<ControlPoint> _controlPoints = new();
+        private Enterprise? _selectedEnterprise;
+        private ControlPoint? _selectedControlPoint;
 
+        public ObservableCollection<Enterprise> Enterprises
+        {
+            get => _enterprises;
+            set => SetProperty(ref _enterprises, value);
+        }
+
+        public ObservableCollection<ControlPoint> ControlPoints
+        {
+            get => _controlPoints;
+            set => SetProperty(ref _controlPoints, value);
+        }
+
+        public Enterprise? SelectedEnterprise
+        {
+            get => _selectedEnterprise;
+            set
+            {
+                if (SetProperty(ref _selectedEnterprise, value))
+                {
+                    EnterpriseId = value?.Id ?? 0;
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
+
+        public ControlPoint? SelectedControlPoint
+        {
+            get => _selectedControlPoint;
+            set
+            {
+                if (SetProperty(ref _selectedControlPoint, value))
+                {
+                    ControlPointId = value?.Id ?? 0;
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
         public string Code
         {
             get => _code;
@@ -91,13 +135,19 @@ namespace PDSCalculatorDesktop.ViewModels
         public ICommand CancelCommand { get; }
 
         public DischargeEditViewModel(
-            IDischargeService dischargeService,
-            Window window,
-            Discharge? discharge = null)
+                        IDischargeService dischargeService,
+                        IEnterpriseService enterpriseService,
+                        IControlPointService controlPointService,
+                        Window window,
+                        Discharge? discharge = null)
         {
             _dischargeService = dischargeService;
+            _enterpriseService = enterpriseService;
+            _controlPointService = controlPointService;
             _window = window;
             _originalDischarge = discharge;
+
+            LoadDataAsync();
 
             if (_originalDischarge != null)
             {
@@ -116,12 +166,45 @@ namespace PDSCalculatorDesktop.ViewModels
             CancelCommand = new RelayCommand(_ => Cancel());
         }
 
+        private async void LoadDataAsync()
+        {
+            try
+            {
+                var enterprises = await _enterpriseService.GetAllEnterprisesAsync();
+                var controlPoints = await _controlPointService.GetAllControlPointsAsync();
+
+                Enterprises.Clear();
+                foreach (var enterprise in enterprises)
+                {
+                    Enterprises.Add(enterprise);
+                }
+
+                ControlPoints.Clear();
+                foreach (var controlPoint in controlPoints)
+                {
+                    ControlPoints.Add(controlPoint);
+                }
+
+                if (_originalDischarge != null)
+                {
+                    SelectedEnterprise = Enterprises.FirstOrDefault(e => e.Id == _originalDischarge.EnterpriseId);
+                    SelectedControlPoint = ControlPoints.FirstOrDefault(c => c.Id == _originalDischarge.ControlPointId);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private bool CanSave()
         {
             return !string.IsNullOrWhiteSpace(Code)
                 && !string.IsNullOrWhiteSpace(Name)
-                && !int.IsNegative(EnterpriseId)
-                && !int.IsNegative(ControlPointId);
+                && SelectedEnterprise != null
+                && SelectedControlPoint != null
+                && RegistrationAt != DateTime.MinValue;
         }
 
         private async void SaveAsync()

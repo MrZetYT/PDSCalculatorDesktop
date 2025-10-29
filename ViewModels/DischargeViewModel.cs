@@ -14,6 +14,8 @@ namespace PDSCalculatorDesktop.ViewModels
     public class DischargeViewModel : ViewModelBase
     {
         private readonly IDischargeService _dischargeService;
+        private readonly IEnterpriseService _enterpriseService;
+        private readonly IControlPointService _controlPointService;
         private Discharge? _selectedDischarge;
         private string _searchText = string.Empty;
 
@@ -51,9 +53,11 @@ namespace PDSCalculatorDesktop.ViewModels
 
         public ICommand RefreshCommand { get; }
 
-        public DischargeViewModel(IDischargeService dischargeService)
+        public DischargeViewModel(IDischargeService dischargeService, IEnterpriseService enterpriseService, IControlPointService controlPointService)
         {
             _dischargeService = dischargeService;
+            _enterpriseService = enterpriseService;
+            _controlPointService = controlPointService;
             Discharges = new ObservableCollection<Discharge>();
 
             AddCommand = new RelayCommand(_ => AddDischarge());
@@ -108,6 +112,8 @@ namespace PDSCalculatorDesktop.ViewModels
 
             var viewModel = new DischargeEditViewModel(
                 _dischargeService,
+                _enterpriseService,
+                _controlPointService,
                 window,
                 null
             );
@@ -130,8 +136,10 @@ namespace PDSCalculatorDesktop.ViewModels
 
             var viewModel = new DischargeEditViewModel(
                 _dischargeService,
+                _enterpriseService,
+                _controlPointService,
                 window,
-                SelectedDischarge
+                null
             );
 
             window.DataContext = viewModel;

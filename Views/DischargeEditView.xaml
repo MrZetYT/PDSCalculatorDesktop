@@ -3,10 +3,226 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PDSCalculatorDesktop.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="DischargeEditView" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="{Binding WindowTitle}" 
+        Height="680" 
+        Width="600"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+
+    <!-- Основной контейнер с отступами и тенью -->
+    <materialDesign:Card Margin="20" 
+                        Padding="25"
+                        UniformCornerRadius="15">
+
+        <Grid>
+            <!-- Определяем строки -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Строка 0: Подпись "Код выпуска" -->
+                <RowDefinition Height="Auto"/>
+                <!-- Строка 1: Поле ввода кода -->
+                <RowDefinition Height="Auto"/>
+                <!-- Строка 2: Подпись "Название выпуска" -->
+                <RowDefinition Height="Auto"/>
+                <!-- Строка 3: Поле ввода названия -->
+                <RowDefinition Height="Auto"/>
+                <!-- Строка 4: Подпись "Дата регистрации" -->
+                <RowDefinition Height="Auto"/>
+                <!-- Строка 5: DatePicker -->
+                <RowDefinition Height="Auto"/>
+                <!-- Строка 6: Подпись "Предприятие" -->
+                <RowDefinition Height="Auto"/>
+                <!-- Строка 7: ComboBox предприятий -->
+                <RowDefinition Height="Auto"/>
+                <!-- Строка 8: Подпись "Контрольный створ" -->
+                <RowDefinition Height="Auto"/>
+                <!-- Строка 9: ComboBox створов -->
+                <RowDefinition Height="*"/>
+                <!-- Строка 10: Пустое место + кнопки внизу -->
+            </Grid.RowDefinitions>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 0: Подпись "Код выпуска" -->
+            <!-- ============================================ -->
+            <TextBlock Grid.Row="0" 
+                       Text="Код выпуска:"
+                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                       Foreground="#1976D2"
+                       Margin="0,0,0,5"/>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 1: Поле ввода кода -->
+            <!-- ============================================ -->
+            <TextBox Grid.Row="1"
+                     Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}"
+                     materialDesign:HintAssist.Hint="Введите уникальный код"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     FontSize="14"
+                     Margin="0,0,0,15">
+            </TextBox>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 2: Подпись "Название выпуска" -->
+            <!-- ============================================ -->
+            <TextBlock Grid.Row="2" 
+                       Text="Название выпуска:"
+                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                       Foreground="#1976D2"
+                       Margin="0,0,0,5"/>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 3: Поле ввода названия -->
+            <!-- ============================================ -->
+            <TextBox Grid.Row="3"
+                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                     materialDesign:HintAssist.Hint="Введите полное название"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     FontSize="14"
+                     Margin="0,0,0,15"/>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 4: Подпись "Дата регистрации" -->
+            <!-- ============================================ -->
+            <TextBlock Grid.Row="4" 
+                       Text="Дата регистрации:"
+                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                       Foreground="#1976D2"
+                       Margin="0,0,0,5"/>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 5: DatePicker -->
+            <!-- ============================================ -->
+            <DatePicker Grid.Row="5"
+                        SelectedDate="{Binding RegistrationAt, UpdateSourceTrigger=PropertyChanged}"
+                        materialDesign:HintAssist.Hint="Выберите дату"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                        FontSize="14"
+                        Margin="0,0,0,15"/>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 6: Подпись "Предприятие" -->
+            <!-- ============================================ -->
+            <TextBlock Grid.Row="6" 
+                       Text="Предприятие:"
+                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                       Foreground="#1976D2"
+                       Margin="0,0,0,5"/>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 7: ComboBox предприятий -->
+            <!-- ============================================ -->
+            <ComboBox Grid.Row="7"
+                      ItemsSource="{Binding Enterprises}"
+                      SelectedItem="{Binding SelectedEnterprise, UpdateSourceTrigger=PropertyChanged}"
+                      materialDesign:HintAssist.Hint="Выберите предприятие"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                      FontSize="14"
+                      Margin="0,0,0,15">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" FontWeight="Medium"/>
+                            <TextBlock Text="{Binding Code}" 
+                                       FontSize="11" 
+                                       Foreground="Gray"
+                                       Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 8: Подпись "Контрольный створ" -->
+            <!-- ============================================ -->
+            <TextBlock Grid.Row="8" 
+                       Text="Контрольный створ:"
+                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                       Foreground="#1976D2"
+                       Margin="0,0,0,5"/>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 9: ComboBox створов -->
+            <!-- ============================================ -->
+            <ComboBox Grid.Row="9"
+                      ItemsSource="{Binding ControlPoints}"
+                      SelectedItem="{Binding SelectedControlPoint, UpdateSourceTrigger=PropertyChanged}"
+                      materialDesign:HintAssist.Hint="Выберите контрольный створ"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                      FontSize="14"
+                      Margin="0,0,0,15">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" FontWeight="Medium"/>
+                            <TextBlock FontSize="11" Foreground="Gray" Margin="0,2,0,0">
+                                <Run Text="№"/>
+                                <Run Text="{Binding Number}"/>
+                                <Run Text=" • "/>
+                                <Run Text="{Binding Distance, StringFormat='N0'}"/>
+                                <Run Text=" м"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <!-- ============================================ -->
+            <!-- СТРОКА 10: Кнопки в правом нижнем углу -->
+            <!-- ============================================ -->
+            <StackPanel Grid.Row="10" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom">
+
+                <!-- Кнопка: Сохранить (синяя, с иконкой) -->
+                <Button Command="{Binding SaveCommand}"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Width="140"
+                        Height="40"
+                        Margin="0,0,15,0"
+                        Background="#1976D2"
+                        BorderBrush="#1976D2"
+                        materialDesign:ButtonAssist.CornerRadius="10"
+                        materialDesign:ElevationAssist.Elevation="Dp4">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ContentSave" 
+                                                Width="20" 
+                                                Height="20"
+                                                VerticalAlignment="Center"/>
+                        <TextBlock Text="Сохранить" 
+                                  Margin="8,0,0,0"
+                                  VerticalAlignment="Center"
+                                  FontSize="13"
+                                  FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Кнопка: Отменить (серая, с иконкой) -->
+                <Button Command="{Binding CancelCommand}"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Width="140"
+                        Height="40"
+                        Background="#757575"
+                        BorderBrush="#757575"
+                        materialDesign:ButtonAssist.CornerRadius="10"
+                        materialDesign:ElevationAssist.Elevation="Dp4">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Close" 
+                                                Width="20" 
+                                                Height="20"
+                                                VerticalAlignment="Center"/>
+                        <TextBlock Text="Отменить" 
+                                  Margin="8,0,0,0"
+                                  VerticalAlignment="Center"
+                                  FontSize="13"
+                                  FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </materialDesign:Card>
 </Window>
