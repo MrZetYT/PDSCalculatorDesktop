@@ -113,7 +113,7 @@ namespace PDSCalculatorDesktop.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("Enterprises");
+                    b.ToTable("Discharges");
                 });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.Measurement", b =>

@@ -22,5 +22,7 @@ namespace PDSCalculatorDesktop.Services
                                                               double distanceToWaterSurface, double distanceToShore, double distanceToControlPoint);
 
         Task<IEnumerable<TechnicalParameters>> GetTechnicalParametersHistoryAsync(int dischargeId);
+
+        Task<IEnumerable<Discharge>> GetAllDischargesWithRelatedDataAsync();
     }
 }

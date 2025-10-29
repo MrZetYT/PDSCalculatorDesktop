@@ -181,5 +181,10 @@ namespace PDSCalculatorDesktop.Services
         {
             return await _dischargeRepository.GetTechnicalParametersAsync(dischargeId);
         }
+
+        public async Task<IEnumerable<Discharge>> GetAllDischargesWithRelatedDataAsync()
+        {
+            return await _dischargeRepository.GetAllWithRelatedDataAsync();
+        }
     }
 }

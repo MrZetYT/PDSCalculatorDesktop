@@ -71,5 +71,10 @@ namespace PDSCalculatorDesktop.Repositories
                 .OrderBy(n=> n.ValidFrom)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Discharge>> GetAllWithRelatedDataAsync()
+        {
+            return await _context.Set<Discharge>().Include(n=>n.Enterprise).Include(n=>n.ControlPoint).ToListAsync();
+        }
     }
 }

@@ -1,0 +1,176 @@
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using PDSCalculatorDesktop.Commands;
+using PDSCalculatorDesktop.Models;
+using PDSCalculatorDesktop.Services;
+using PDSCalculatorDesktop.Views;
+
+namespace PDSCalculatorDesktop.ViewModels
+{
+    public class DischargeViewModel : ViewModelBase
+    {
+        private readonly IDischargeService _dischargeService;
+        private Discharge? _selectedDischarge;
+        private string _searchText = string.Empty;
+
+        public ObservableCollection<Discharge> Discharges { get; set; }
+
+        public Discharge? SelectedDischarge
+        {
+            get => _selectedDischarge;
+            set
+            {
+                if (SetProperty(ref _selectedDischarge, value))
+                {
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
+
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (SetProperty(ref _searchText, value))
+                {
+                    LoadDischargesAsync();
+                }
+            }
+        }
+
+        public ICommand AddCommand { get; }
+
+        public ICommand EditCommand { get; }
+
+        public ICommand DeleteCommand { get; }
+
+        public ICommand RefreshCommand { get; }
+
+        public DischargeViewModel(IDischargeService dischargeService)
+        {
+            _dischargeService = dischargeService;
+            Discharges = new ObservableCollection<Discharge>();
+
+            AddCommand = new RelayCommand(_ => AddDischarge());
+
+            EditCommand = new RelayCommand(
+                execute: _ => EditDischarge(),
+                canExecute: _ => SelectedDischarge != null
+            );
+
+            DeleteCommand = new RelayCommand(
+                execute: _ => DeleteDischargeAsync(),
+                canExecute: _ => SelectedDischarge != null
+            );
+
+            RefreshCommand = new RelayCommand(_ => LoadDischargesAsync());
+
+            LoadDischargesAsync();
+        }
+
+        private async void LoadDischargesAsync()
+        {
+            try
+            {
+                var discharges = await _dischargeService.GetAllDischargesWithRelatedDataAsync();
+
+                if (!string.IsNullOrWhiteSpace(SearchText))
+                {
+                    discharges = discharges.Where(d =>
+                        d.Code.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        d.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        (d.Enterprise?.Name?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                        (d.ControlPoint?.Name?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false)
+                    );
+                }
+
+                Discharges.Clear();
+                foreach (var discharge in discharges)
+                {
+                    Discharges.Add(discharge);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void AddDischarge()
+        {
+            var window = new DischargeEditView();
+
+            var viewModel = new DischargeEditViewModel(
+                _dischargeService,
+                window,
+                null
+            );
+
+            window.DataContext = viewModel;
+
+            var result = window.ShowDialog();
+
+            if (result == true)
+            {
+                LoadDischargesAsync();
+            }
+        }
+
+        private void EditDischarge()
+        {
+            if (SelectedDischarge == null) return;
+
+            var window = new DischargeEditView();
+
+            var viewModel = new DischargeEditViewModel(
+                _dischargeService,
+                window,
+                SelectedDischarge
+            );
+
+            window.DataContext = viewModel;
+
+            var result = window.ShowDialog();
+
+            if (result == true)
+            {
+                LoadDischargesAsync();
+            }
+        }
+
+        private async void DeleteDischargeAsync()
+        {
+            if (SelectedDischarge == null) return;
+
+            var result = MessageBox.Show(
+                $"Вы уверены, что хотите удалить выпуск '{SelectedDischarge.Name}'?",
+                "Подтверждение удаления",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
+
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                await _dischargeService.DeleteDischargeAsync(SelectedDischarge.Id);
+
+                Discharges.Remove(SelectedDischarge);
+
+                MessageBox.Show("Выпуск успешно удален", "Успех",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка удаления: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+}
