@@ -213,7 +213,12 @@ namespace PDSCalculatorDesktop.ViewModels
             {
                 if (_originalDischarge == null)
                 {
-                    await _dischargeService.CreateDischargeAsync(Code.Trim(), Name.Trim(), RegistrationAt, EnterpriseId, ControlPointId);
+                    await _dischargeService.CreateDischargeAsync(
+                        Code.Trim(),
+                        Name.Trim(),
+                        DateTime.SpecifyKind(RegistrationAt, DateTimeKind.Utc),
+                        EnterpriseId,
+                        ControlPointId);
 
                     MessageBox.Show(
                         "Выпуск успешно добавлен!",
@@ -228,7 +233,7 @@ namespace PDSCalculatorDesktop.ViewModels
                         _originalDischarge.Id,
                         Code.Trim(),
                         Name.Trim(),
-                        RegistrationAt,
+                        DateTime.SpecifyKind(RegistrationAt,DateTimeKind.Utc),
                         EnterpriseId,
                         ControlPointId
                     );
@@ -255,8 +260,12 @@ namespace PDSCalculatorDesktop.ViewModels
             }
             catch (Exception ex)
             {
+                var innerMessage = ex.InnerException != null
+                    ? $"\n\nВнутренняя ошибка: {ex.InnerException.Message}"
+                    : "";
+
                 MessageBox.Show(
-                    $"Произошла ошибка: {ex.Message}",
+                    $"Произошла ошибка: {ex.Message}{innerMessage}",
                     "Ошибка",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error

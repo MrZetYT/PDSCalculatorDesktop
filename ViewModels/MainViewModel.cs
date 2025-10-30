@@ -13,6 +13,7 @@ namespace PDSCalculatorDesktop.ViewModels
         public ICommand OpenEnterprisesCommand { get; }
         public ICommand OpenDischargesCommand { get; }
         public ICommand OpenControlPointsCommand { get; }
+        public ICommand OpenSubstancesCommand { get; }
         public ICommand ExitCommand { get; }
 
         public MainViewModel(IServiceProvider serviceProvider)
@@ -22,26 +23,32 @@ namespace PDSCalculatorDesktop.ViewModels
             OpenEnterprisesCommand = new RelayCommand(_ => OpenEnterprises());
             OpenDischargesCommand = new RelayCommand(_ => OpenDischarges());
             OpenControlPointsCommand = new RelayCommand(_ => OpenControlPoints());
+            OpenSubstancesCommand = new RelayCommand(_ => OpenSubstances());
             ExitCommand = new RelayCommand(_ => Exit());
         }
 
         private void OpenEnterprises()
         {
             var view = _serviceProvider.GetRequiredService<EnterpriseView>();
-            view.Show();
+            view.ShowDialog();
         }
 
         private void OpenDischarges()
         {
             var view = _serviceProvider.GetRequiredService<DischargeView>();
-            view.Show();
+            view.ShowDialog();
         }
 
         private void OpenControlPoints()
         {
-            // TODO: Создадим позже
-            MessageBox.Show("Окно управления контрольными створами еще не создано",
-                "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            var view = _serviceProvider.GetRequiredService<ControlPointView>();
+            view.ShowDialog();
+        }
+
+        private void OpenSubstances()
+        {
+            var view = _serviceProvider.GetRequiredService<SubstanceView>();
+            view.ShowDialog();
         }
 
         private void Exit()

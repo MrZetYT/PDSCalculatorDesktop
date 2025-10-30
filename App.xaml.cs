@@ -37,21 +37,27 @@ namespace PDSCalculatorDesktop
             services.AddScoped<IDischargeRepository, DischargeRepository>();
             services.AddScoped<IControlPointRepository, ControlPointRepository>();
             services.AddScoped<ITechnicalParametersRepository, TechnicalParametersRepository>();
+            services.AddScoped<ISubstanceRepository, SubstanceRepository>();
 
             // Регистрация Services
             services.AddScoped<IEnterpriseService, EnterpriseService>();
             services.AddScoped<IDischargeService, DischargeService>();
             services.AddScoped<IControlPointService, ControlPointService>();
+            services.AddScoped<ISubstanceService,  SubstanceService>();
 
             // Регистрация ViewModels
             services.AddTransient<MainViewModel>();
             services.AddTransient<EnterpriseViewModel>();
             services.AddTransient<DischargeViewModel>();
+            services.AddTransient<ControlPointViewModel>();
+            services.AddTransient<SubstanceViewModel>();
 
             // Регистрация Views
             services.AddTransient<MainWindow>();
             services.AddTransient<EnterpriseView>();
             services.AddTransient<DischargeView>();
+            services.AddTransient<ControlPointView>();
+            services.AddTransient<SubstanceView>();
 
             _serviceProvider = services.BuildServiceProvider();
 

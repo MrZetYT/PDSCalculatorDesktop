@@ -176,7 +176,7 @@ namespace PDSCalculatorDesktop.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Enterprises_Code",
                 table: "Discharges",
-                column: "Code",
+                column: "Number",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -197,7 +197,7 @@ namespace PDSCalculatorDesktop.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Substances_Code",
                 table: "Substances",
-                column: "Code",
+                column: "Number",
                 unique: true);
 
             migrationBuilder.CreateIndex(

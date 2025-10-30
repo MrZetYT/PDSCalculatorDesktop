@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace PDSCalculatorDesktop.Views
 {
     /// <summary>
-    /// Логика взаимодействия для EntepriseEditView.xaml
+    /// Логика взаимодействия для ControlPointEditView.xaml
     /// </summary>
-    public partial class EnterpriseEditView : Window
+    public partial class ControlPointEditView : Window
     {
-        public EnterpriseEditView()
+        public ControlPointEditView()
         {
             InitializeComponent();
         }

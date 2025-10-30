@@ -24,6 +24,7 @@ namespace PDSCalculatorDesktop
                     "OpenEnterprisesCommand" => viewModel.OpenEnterprisesCommand,
                     "OpenDischargesCommand" => viewModel.OpenDischargesCommand,
                     "OpenControlPointsCommand" => viewModel.OpenControlPointsCommand,
+                    "OpenSubstancesCommand" => viewModel.OpenSubstancesCommand,
                     _ => null
                 };
 

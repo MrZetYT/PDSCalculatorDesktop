@@ -13,7 +13,6 @@ namespace PDSCalculatorDesktop.ViewModels
 {
     public class EnterpriseViewModel : ViewModelBase
     {
-
         private readonly IEnterpriseService _enterpriseService;
         private Enterprise? _selectedEnterprise;
         private string _searchText = string.Empty;
