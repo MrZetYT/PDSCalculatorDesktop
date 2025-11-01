@@ -26,296 +26,296 @@ namespace PDSCalculatorDesktop.Migrations
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.ControlPoint", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("Distance")
-                        .HasColumnType("double precision");
+                b.Property<double>("Distance")
+                    .HasColumnType("double precision");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)");
 
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                b.Property<string>("Number")
+                    .IsRequired()
+                    .HasMaxLength(30)
+                    .HasColumnType("character varying(30)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("Number")
-                        .IsUnique();
+                b.HasIndex("Number")
+                    .IsUnique();
 
-                    b.ToTable("ControlPoints");
-                });
+                b.ToTable("ControlPoints");
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.Discharge", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                b.Property<string>("Code")
+                    .IsRequired()
+                    .HasMaxLength(30)
+                    .HasColumnType("character varying(30)");
 
-                    b.Property<int>("ControlPointId")
-                        .HasColumnType("integer");
+                b.Property<int>("ControlPointId")
+                    .HasColumnType("integer");
 
-                    b.Property<int>("EnterpriseId")
-                        .HasColumnType("integer");
+                b.Property<int>("EnterpriseId")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(300)
+                    .HasColumnType("character varying(300)");
 
-                    b.Property<DateTime>("RegistrationAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("RegistrationAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ControlPointId");
+                b.HasIndex("ControlPointId");
 
-                    b.HasIndex("EnterpriseId");
+                b.HasIndex("EnterpriseId");
 
-                    b.ToTable("Discharges");
-                });
+                b.ToTable("Discharges");
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.Enterprise", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                b.Property<string>("Code")
+                    .IsRequired()
+                    .HasMaxLength(30)
+                    .HasColumnType("character varying(30)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(300)
+                    .HasColumnType("character varying(300)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("Number")
-                        .IsUnique();
+                b.HasIndex("Code")
+                    .IsUnique();
 
-                    b.ToTable("Discharges");
-                });
+                b.ToTable("Enterprises");
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.Measurement", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
+
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                b.Property<int?>("ControlPointId")
+                    .HasColumnType("integer");
+
+                b.Property<DateTime>("Date")
+                    .HasColumnType("timestamp with time zone");
+
+                b.Property<int?>("DischargeId")
+                    .HasColumnType("integer");
+
+                b.Property<int>("MeasurementType")
+                    .HasColumnType("integer");
+
+                b.Property<int>("SubstanceId")
+                    .HasColumnType("integer");
+
+                b.Property<double>("Value")
+                    .HasColumnType("double precision");
+
+                b.HasKey("Id");
+
+                b.HasIndex("ControlPointId");
+
+                b.HasIndex("DischargeId");
+
+                b.HasIndex("SubstanceId");
+
+                b.ToTable("Measurements", t =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ControlPointId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("DischargeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MeasurementType")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SubstanceId")
-                        .HasColumnType("integer");
-
-                    b.Property<double>("Value")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ControlPointId");
-
-                    b.HasIndex("DischargeId");
-
-                    b.HasIndex("SubstanceId");
-
-                    b.ToTable("Measurements", t =>
-                        {
-                            t.HasCheckConstraint("CK_Measurement_XOR", "(\"DischargeId\" IS NOT NULL AND \"ControlPointId\" IS NULL) OR (\"DischargeId\" IS NULL AND \"ControlPointId\" IS NOT NULL)");
-                        });
+                    t.HasCheckConstraint("CK_Measurement_XOR", "(\"DischargeId\" IS NOT NULL AND \"ControlPointId\" IS NULL) OR (\"DischargeId\" IS NULL AND \"ControlPointId\" IS NOT NULL)");
                 });
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.Substance", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                b.Property<string>("Code")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("character varying(50)");
 
-                    b.Property<string>("GroupLFV")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                b.Property<string>("GroupLFV")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)");
 
-                    b.Property<int>("HazardClass")
-                        .HasColumnType("integer");
+                b.Property<int>("HazardClass")
+                    .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("Number")
-                        .IsUnique();
+                b.HasIndex("Code")
+                    .IsUnique();
 
-                    b.ToTable("Substances");
-                });
+                b.ToTable("Substances");
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.TechnicalParameters", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer");
+
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                b.Property<double>("Diameter")
+                    .HasColumnType("double precision");
+
+                b.Property<double>("DischargeAngle")
+                    .HasColumnType("double precision");
+
+                b.Property<int>("DischargeId")
+                    .HasColumnType("integer");
+
+                b.Property<double>("DistanceToControlPoint")
+                    .HasColumnType("double precision");
+
+                b.Property<double>("DistanceToShore")
+                    .HasColumnType("double precision");
+
+                b.Property<double>("DistanceToWaterSurface")
+                    .HasColumnType("double precision");
+
+                b.Property<double>("FlowRate")
+                    .HasColumnType("double precision");
+
+                b.Property<DateTime>("ValidFrom")
+                    .HasColumnType("timestamp with time zone");
+
+                b.Property<double>("WaterFlowVelocity")
+                    .HasColumnType("double precision");
+
+                b.HasKey("Id");
+
+                b.HasIndex("DischargeId");
+
+                b.ToTable("TechnicalParameters", t =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                    t.HasCheckConstraint("CK_TechnicalParameters_Diameter", "\"Diameter\" > 0");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    t.HasCheckConstraint("CK_TechnicalParameters_DischargeAngle", "\"DischargeAngle\" > 0");
 
-                    b.Property<double>("Diameter")
-                        .HasColumnType("double precision");
+                    t.HasCheckConstraint("CK_TechnicalParameters_DistanceToControlPoint", "\"DistanceToControlPoint\" > 0");
 
-                    b.Property<double>("DischargeAngle")
-                        .HasColumnType("double precision");
+                    t.HasCheckConstraint("CK_TechnicalParameters_DistanceToShore", "\"DistanceToShore\" > 0");
 
-                    b.Property<int>("DischargeId")
-                        .HasColumnType("integer");
+                    t.HasCheckConstraint("CK_TechnicalParameters_DistanceToWaterSurface", "\"DistanceToWaterSurface\" > 0");
 
-                    b.Property<double>("DistanceToControlPoint")
-                        .HasColumnType("double precision");
+                    t.HasCheckConstraint("CK_TechnicalParameters_FlowRate", "\"FlowRate\" > 0");
 
-                    b.Property<double>("DistanceToShore")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("DistanceToWaterSurface")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("FlowRate")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTime>("ValidFrom")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<double>("WaterFlowVelocity")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DischargeId");
-
-                    b.ToTable("TechnicalParameters", t =>
-                        {
-                            t.HasCheckConstraint("CK_TechnicalParameters_Diameter", "\"Diameter\" > 0");
-
-                            t.HasCheckConstraint("CK_TechnicalParameters_DischargeAngle", "\"DischargeAngle\" > 0");
-
-                            t.HasCheckConstraint("CK_TechnicalParameters_DistanceToControlPoint", "\"DistanceToControlPoint\" > 0");
-
-                            t.HasCheckConstraint("CK_TechnicalParameters_DistanceToShore", "\"DistanceToShore\" > 0");
-
-                            t.HasCheckConstraint("CK_TechnicalParameters_DistanceToWaterSurface", "\"DistanceToWaterSurface\" > 0");
-
-                            t.HasCheckConstraint("CK_TechnicalParameters_FlowRate", "\"FlowRate\" > 0");
-
-                            t.HasCheckConstraint("CK_TechnicalParameters_WaterFlowVelocity", "\"WaterFlowVelocity\" > 0");
-                        });
+                    t.HasCheckConstraint("CK_TechnicalParameters_WaterFlowVelocity", "\"WaterFlowVelocity\" > 0");
                 });
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.Discharge", b =>
-                {
-                    b.HasOne("PDSCalculatorDesktop.Models.ControlPoint", "ControlPoint")
-                        .WithMany("Discharges")
-                        .HasForeignKey("ControlPointId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+            {
+                b.HasOne("PDSCalculatorDesktop.Models.ControlPoint", "ControlPoint")
+                    .WithMany("Discharges")
+                    .HasForeignKey("ControlPointId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.HasOne("PDSCalculatorDesktop.Models.Enterprise", "Enterprise")
-                        .WithMany("Discharges")
-                        .HasForeignKey("EnterpriseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("PDSCalculatorDesktop.Models.Enterprise", "Enterprise")
+                    .WithMany("Discharges")
+                    .HasForeignKey("EnterpriseId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.Navigation("ControlPoint");
+                b.Navigation("ControlPoint");
 
-                    b.Navigation("Enterprise");
-                });
+                b.Navigation("Enterprise");
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.Measurement", b =>
-                {
-                    b.HasOne("PDSCalculatorDesktop.Models.ControlPoint", "ControlPoint")
-                        .WithMany()
-                        .HasForeignKey("ControlPointId")
-                        .OnDelete(DeleteBehavior.Restrict);
+            {
+                b.HasOne("PDSCalculatorDesktop.Models.ControlPoint", "ControlPoint")
+                    .WithMany()
+                    .HasForeignKey("ControlPointId")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PDSCalculatorDesktop.Models.Discharge", "Discharge")
-                        .WithMany()
-                        .HasForeignKey("DischargeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                b.HasOne("PDSCalculatorDesktop.Models.Discharge", "Discharge")
+                    .WithMany()
+                    .HasForeignKey("DischargeId")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PDSCalculatorDesktop.Models.Substance", "Substance")
-                        .WithMany()
-                        .HasForeignKey("SubstanceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                b.HasOne("PDSCalculatorDesktop.Models.Substance", "Substance")
+                    .WithMany()
+                    .HasForeignKey("SubstanceId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.Navigation("ControlPoint");
+                b.Navigation("ControlPoint");
 
-                    b.Navigation("Discharge");
+                b.Navigation("Discharge");
 
-                    b.Navigation("Substance");
-                });
+                b.Navigation("Substance");
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.TechnicalParameters", b =>
-                {
-                    b.HasOne("PDSCalculatorDesktop.Models.Discharge", "Discharge")
-                        .WithMany("TechnicalParameters")
-                        .HasForeignKey("DischargeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+            {
+                b.HasOne("PDSCalculatorDesktop.Models.Discharge", "Discharge")
+                    .WithMany("TechnicalParameters")
+                    .HasForeignKey("DischargeId")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
-                    b.Navigation("Discharge");
-                });
+                b.Navigation("Discharge");
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.ControlPoint", b =>
-                {
-                    b.Navigation("Discharges");
-                });
+            {
+                b.Navigation("Discharges");
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.Discharge", b =>
-                {
-                    b.Navigation("TechnicalParameters");
-                });
+            {
+                b.Navigation("TechnicalParameters");
+            });
 
             modelBuilder.Entity("PDSCalculatorDesktop.Models.Enterprise", b =>
-                {
-                    b.Navigation("Discharges");
-                });
+            {
+                b.Navigation("Discharges");
+            });
 #pragma warning restore 612, 618
         }
     }

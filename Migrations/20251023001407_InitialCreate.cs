@@ -28,7 +28,7 @@ namespace PDSCalculatorDesktop.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Discharges",
+                name: "Enterprises",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -81,7 +81,7 @@ namespace PDSCalculatorDesktop.Migrations
                     table.ForeignKey(
                         name: "FK_Discharges_Enterprises_EnterpriseId",
                         column: x => x.EnterpriseId,
-                        principalTable: "Discharges",
+                        principalTable: "Enterprises",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -175,8 +175,8 @@ namespace PDSCalculatorDesktop.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Enterprises_Code",
-                table: "Discharges",
-                column: "Number",
+                table: "Enterprises",
+                column: "Code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -197,7 +197,7 @@ namespace PDSCalculatorDesktop.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Substances_Code",
                 table: "Substances",
-                column: "Number",
+                column: "Code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -225,7 +225,7 @@ namespace PDSCalculatorDesktop.Migrations
                 name: "ControlPoints");
 
             migrationBuilder.DropTable(
-                name: "Discharges");
+                name: "Enterprises");
         }
     }
 }
