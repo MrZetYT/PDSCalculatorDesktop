@@ -38,12 +38,14 @@ namespace PDSCalculatorDesktop
             services.AddScoped<IControlPointRepository, ControlPointRepository>();
             services.AddScoped<ITechnicalParametersRepository, TechnicalParametersRepository>();
             services.AddScoped<ISubstanceRepository, SubstanceRepository>();
+            services.AddScoped<IMeasurementRepository, MeasurementRepository>();
 
             // Регистрация Services
             services.AddScoped<IEnterpriseService, EnterpriseService>();
             services.AddScoped<IDischargeService, DischargeService>();
             services.AddScoped<IControlPointService, ControlPointService>();
             services.AddScoped<ISubstanceService,  SubstanceService>();
+            services.AddScoped<IMeasurementService, MeasurementService>();
 
             // Регистрация ViewModels
             services.AddTransient<MainViewModel>();
@@ -51,6 +53,7 @@ namespace PDSCalculatorDesktop
             services.AddTransient<DischargeViewModel>();
             services.AddTransient<ControlPointViewModel>();
             services.AddTransient<SubstanceViewModel>();
+            services.AddTransient<MeasurementViewModel>();
 
             // Регистрация Views
             services.AddTransient<MainWindow>();
@@ -58,6 +61,7 @@ namespace PDSCalculatorDesktop
             services.AddTransient<DischargeView>();
             services.AddTransient<ControlPointView>();
             services.AddTransient<SubstanceView>();
+            services.AddTransient<MeasurementView>();
 
             _serviceProvider = services.BuildServiceProvider();
 

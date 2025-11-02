@@ -16,6 +16,9 @@ namespace PDSCalculatorDesktop.ViewModels
     public class MeasurementViewModel : ViewModelBase
     {
         private readonly IMeasurementService _measurementService;
+        private readonly IControlPointService _controlPointService;
+        private readonly IDischargeService _dischargeService;
+        private readonly ISubstanceService _substanceService;
         private Measurement? _selectedMeasurement;
         private string _searchText = string.Empty;
 
@@ -53,9 +56,16 @@ namespace PDSCalculatorDesktop.ViewModels
 
         public ICommand RefreshCommand { get; }
 
-        public MeasurementViewModel(IMeasurementService measurementService)
+        public MeasurementViewModel(IMeasurementService measurementService,
+            IControlPointService controlPointService,
+            IDischargeService dischargeService,
+            ISubstanceService substanceService)
         {
             _measurementService = measurementService;
+            _controlPointService = controlPointService;
+            _dischargeService = dischargeService;
+            _substanceService = substanceService;
+
             Measurements = new ObservableCollection<Measurement>();
 
             AddCommand = new RelayCommand(_ => AddMeasurement());
@@ -73,6 +83,9 @@ namespace PDSCalculatorDesktop.ViewModels
             RefreshCommand = new RelayCommand(_ => LoadMeasurementsAsync());
 
             LoadMeasurementsAsync();
+            _controlPointService = controlPointService;
+            _dischargeService = dischargeService;
+            _substanceService = substanceService;
         }
 
         private async void LoadMeasurementsAsync()
@@ -110,6 +123,9 @@ namespace PDSCalculatorDesktop.ViewModels
 
             var viewModel = new MeasurementEditViewModel(
                 _measurementService,
+                _substanceService,
+                _controlPointService,
+                _dischargeService,
                 window,
                 null
             );
@@ -132,6 +148,9 @@ namespace PDSCalculatorDesktop.ViewModels
 
             var viewModel = new MeasurementEditViewModel(
                 _measurementService,
+                _substanceService,
+                _controlPointService,
+                _dischargeService,
                 window,
                 SelectedMeasurement
             );

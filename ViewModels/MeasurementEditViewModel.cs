@@ -22,6 +22,10 @@ namespace PDSCalculatorDesktop.ViewModels
         private readonly Measurement? _originalMeasurement;
         private readonly Window _window;
 
+        public ObservableCollection<MeasurementType> MeasurementTypes = new();
+        private bool _isDischargeSelected = true;
+        private bool _isControlPointSelected = false;
+
         private MeasurementType _measurementType;
         private double _value;
         private int _substanceId=0;
@@ -40,6 +44,7 @@ namespace PDSCalculatorDesktop.ViewModels
             get => _measurementType;
             set => SetProperty(ref _measurementType, value);
         }
+
 
         public double Value
         {
@@ -152,6 +157,34 @@ namespace PDSCalculatorDesktop.ViewModels
             }
         }
 
+        public bool IsDischargeSelected
+        {
+            get => _isDischargeSelected;
+            set
+            {
+                if (SetProperty(ref _isDischargeSelected, value) && value)
+                {
+                    IsControlPointSelected = false;
+                    SelectedControlPoint = null;
+                    ControlPointId = null;
+                }
+            }
+        }
+
+        public bool IsControlPointSelected
+        {
+            get => _isControlPointSelected;
+            set
+            {
+                if (SetProperty(ref _isControlPointSelected, value) && value)
+                {
+                    IsDischargeSelected = false;
+                    SelectedDischarge = null;
+                    DischargeId = null;
+                }
+            }
+        }
+
         public string WindowTitle => _originalMeasurement == null
             ? "Добавление измерения"
             : "Редактирование измерения";
@@ -173,6 +206,12 @@ namespace PDSCalculatorDesktop.ViewModels
             _dischargeService = dischargeService;
             _window = window;
             _originalMeasurement = measurement;
+
+            MeasurementTypes = new ObservableCollection<MeasurementType>(
+                Enum.GetValues(typeof(MeasurementType)).Cast<MeasurementType>()
+            );
+
+            MeasurementType = MeasurementType.SubstanceConcentration;
 
             LoadDataAsync();
 
@@ -309,6 +348,7 @@ namespace PDSCalculatorDesktop.ViewModels
                 );
             }
         }
+
         private void Cancel()
         {
             _window.DialogResult = false;

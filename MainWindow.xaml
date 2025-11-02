@@ -286,12 +286,24 @@
 
                     <!-- Карточка: Расчет ПДС -->
                     <materialDesign:Card Margin="15"
-                                    Width="380"
-                                    Height="100"
-                                    UniformCornerRadius="15"
-                                    Cursor="Hand"
-                                    materialDesign:ElevationAssist.Elevation="Dp4"
-                                    Opacity="0.6">
+                Width="380"
+                Height="100"
+                UniformCornerRadius="15"
+                Cursor="Hand"
+                materialDesign:ElevationAssist.Elevation="Dp4"
+                MouseDown="Card_MouseDown"
+                Tag="OpenMeasurementsCommand">
+                        <materialDesign:Card.Style>
+                            <Style TargetType="materialDesign:Card">
+                                <Setter Property="Background" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F5F5F5"/>
+                                        <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp8"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </materialDesign:Card.Style>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -299,30 +311,31 @@
                             </Grid.ColumnDefinitions>
 
                             <Border Grid.Column="0" 
-                               Background="#C62828" 
-                               Width="80">
-                                <materialDesign:PackIcon Kind="Calculator" 
-                                                    Width="40" 
-                                                    Height="40"
-                                                    Foreground="White"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"/>
+                                    Background="#FF1AAB13" 
+                                    Width="80">
+                                <materialDesign:PackIcon Kind="Ruler" 
+                                                         Width="40" 
+                                                         Height="40"
+                                                         Foreground="White"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"/>
                             </Border>
 
                             <StackPanel Grid.Column="1" 
-                                   VerticalAlignment="Center"
-                                   Margin="20,0,0,0">
-                                <TextBlock Text="Расчет ПДС"
-                                      FontSize="18"
-                                      FontWeight="SemiBold"
-                                      Foreground="#C62828"/>
-                                <TextBlock Text="В разработке"
-                                      FontSize="12"
-                                      Foreground="Gray"
-                                      Margin="0,5,0,0"/>
+                                        VerticalAlignment="Center"
+                                        Margin="20,0,0,0">
+                                <TextBlock Text="Измерения"
+                                           FontSize="18"
+                                           FontWeight="SemiBold"
+                                           Foreground="#FF1AAB13"/>
+                                <TextBlock Text="Хранилище измерений"
+                                           FontSize="12"
+                                           Foreground="Gray"
+                                           Margin="0,5,0,0"/>
                             </StackPanel>
                         </Grid>
                     </materialDesign:Card>
+
 
                     <!-- Карточка: Отчеты -->
                     <materialDesign:Card Margin="15"
