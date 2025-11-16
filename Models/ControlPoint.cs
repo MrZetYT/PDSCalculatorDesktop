@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PDSCalculatorDesktop.Models
+﻿namespace PDSCalculatorDesktop.Models
 {
     public class ControlPoint
     {
-        public int Id {  get; set; }
+        public int Id { get; set; }
+
         public required string Number { get; set; }
+
         public required string Name { get; set; }
-        public double Distance { get; set; }
+
+        public int WaterUseTypeId { get; set; }
+
+        public required WaterUseType WaterUseType { get; set; }
+
         public ICollection<Discharge> Discharges { get; set; } = new List<Discharge>();
+
+        public ICollection<BackgroundConcentration> BackgroundConcentrations { get; set; } = new List<BackgroundConcentration>();
     }
 }

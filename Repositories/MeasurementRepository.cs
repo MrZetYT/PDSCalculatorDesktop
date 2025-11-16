@@ -64,6 +64,27 @@ namespace PDSCalculatorDesktop.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Measurement?> GetByDischargeSubstanceAndTypeAsync(int dischargeId, int substanceId, MeasurementType type, DateTime date)
+        {
+            return await _context.Set<Measurement>()
+                .Where(n=> n.DischargeId == dischargeId && n.SubstanceId == substanceId && n.Date <= date && n.MeasurementType == type)
+                .Include(n => n.Substance)
+                .Include(n => n.Discharge)
+                .Include(n => n.ControlPoint)
+                .OrderByDescending(n => n.Date)
+                .FirstOrDefaultAsync();
+        }
+        public async Task<Measurement?> GetByControlPointSubstanceAndTypeAsync(int controlPointId, int substanceId, MeasurementType type, DateTime date)
+        {
+            return await _context.Set<Measurement>()
+                .Where(n => n.ControlPointId == controlPointId && n.SubstanceId == substanceId && n.Date <= date && n.MeasurementType == type)
+                .Include(n => n.Substance)
+                .Include(n => n.Discharge)
+                .Include(n => n.ControlPoint)
+                .OrderByDescending(n => n.Date)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<Measurement>> GetAllWithRelatedDataAsync()
         {
             return await _context.Set<Measurement>().Include(n => n.Substance).Include(n => n.ControlPoint).Include(n => n.Discharge).ToListAsync();

@@ -72,6 +72,10 @@ namespace PDSCalculatorDesktop.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Discharge?> GetByIdWithRelatedDataAsync(int id)
+        {
+            return await _context.Set<Discharge>().Include(n => n.Enterprise).Include(n => n.ControlPoint).FirstOrDefaultAsync(n=>n.Id == id);
+        }
         public async Task<IEnumerable<Discharge>> GetAllWithRelatedDataAsync()
         {
             return await _context.Set<Discharge>().Include(n=>n.Enterprise).Include(n=>n.ControlPoint).ToListAsync();

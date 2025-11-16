@@ -19,6 +19,7 @@ namespace PDSCalculatorDesktop.Repositories.Interfaces
 
         Task<IEnumerable<TechnicalParameters>> GetTechnicalParametersAsync(int dischargeId);
 
+        Task<Discharge?> GetByIdWithRelatedDataAsync(int id);
         Task<IEnumerable<Discharge>> GetAllWithRelatedDataAsync();
     }
 }
