@@ -15,6 +15,7 @@ namespace PDSCalculatorDesktop.ViewModels
 
         private string _code = string.Empty;
         private string _name = string.Empty;
+        private bool _isSaving = false;
 
         public string Code
         {
@@ -38,6 +39,12 @@ namespace PDSCalculatorDesktop.ViewModels
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
+        }
+
+        public bool IsSaving
+        {
+            get => _isSaving;
+            set => SetProperty(ref _isSaving, value);
         }
 
         public string WindowTitle => _originalEnterprise == null
@@ -72,12 +79,14 @@ namespace PDSCalculatorDesktop.ViewModels
 
         private bool CanSave()
         {
-            return !string.IsNullOrWhiteSpace(Code)
+            return !IsSaving
+                && !string.IsNullOrWhiteSpace(Code)
                 && !string.IsNullOrWhiteSpace(Name);
         }
 
         private async void SaveAsync()
         {
+            IsSaving = true;
             try
             {
                 if (_originalEnterprise == null)
@@ -128,7 +137,13 @@ namespace PDSCalculatorDesktop.ViewModels
                     MessageBoxImage.Error
                 );
             }
+            finally
+            {
+                IsSaving = false;
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
+
         private void Cancel()
         {
             _window.DialogResult = false;

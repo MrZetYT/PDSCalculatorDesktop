@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using PDSCalculatorDesktop.Commands;
@@ -18,8 +17,9 @@ namespace PDSCalculatorDesktop.ViewModels
         private readonly IControlPointService _controlPointService;
         private Discharge? _selectedDischarge;
         private string _searchText = string.Empty;
+        private bool _isLoading = false;
 
-        public ObservableCollection<Discharge> Discharges { get; set; }
+        public ObservableCollection<Discharge> Discharges { get; }
 
         public Discharge? SelectedDischarge
         {
@@ -45,15 +45,21 @@ namespace PDSCalculatorDesktop.ViewModels
             }
         }
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
         public ICommand AddCommand { get; }
-
         public ICommand EditCommand { get; }
-
         public ICommand DeleteCommand { get; }
-
         public ICommand RefreshCommand { get; }
 
-        public DischargeViewModel(IDischargeService dischargeService, IEnterpriseService enterpriseService, IControlPointService controlPointService)
+        public DischargeViewModel(
+            IDischargeService dischargeService,
+            IEnterpriseService enterpriseService,
+            IControlPointService controlPointService)
         {
             _dischargeService = dischargeService;
             _enterpriseService = enterpriseService;
@@ -79,17 +85,18 @@ namespace PDSCalculatorDesktop.ViewModels
 
         private async void LoadDischargesAsync()
         {
+            IsLoading = true;
             try
             {
-                var discharges = await _dischargeService.GetAllDischargesWithRelatedDataAsync();
+                var discharges = await _dischargeService.GetAllDischargesAsync();
 
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     discharges = discharges.Where(d =>
                         d.Code.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                         d.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                        (d.Enterprise?.Name?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                        (d.ControlPoint?.Name?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false)
+                        (d.Enterprise?.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                        (d.ControlPoint?.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false)
                     );
                 }
 
@@ -104,12 +111,15 @@ namespace PDSCalculatorDesktop.ViewModels
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         private void AddDischarge()
         {
             var window = new DischargeEditView();
-
             var viewModel = new DischargeEditViewModel(
                 _dischargeService,
                 _enterpriseService,
@@ -120,9 +130,7 @@ namespace PDSCalculatorDesktop.ViewModels
 
             window.DataContext = viewModel;
 
-            var result = window.ShowDialog();
-
-            if (result == true)
+            if (window.ShowDialog() == true)
             {
                 LoadDischargesAsync();
             }
@@ -133,20 +141,17 @@ namespace PDSCalculatorDesktop.ViewModels
             if (SelectedDischarge == null) return;
 
             var window = new DischargeEditView();
-
             var viewModel = new DischargeEditViewModel(
                 _dischargeService,
                 _enterpriseService,
                 _controlPointService,
                 window,
-                null
+                SelectedDischarge
             );
 
             window.DataContext = viewModel;
 
-            var result = window.ShowDialog();
-
-            if (result == true)
+            if (window.ShowDialog() == true)
             {
                 LoadDischargesAsync();
             }
@@ -168,10 +173,9 @@ namespace PDSCalculatorDesktop.ViewModels
             try
             {
                 await _dischargeService.DeleteDischargeAsync(SelectedDischarge.Id);
-
                 Discharges.Remove(SelectedDischarge);
 
-                MessageBox.Show("Выпуск успешно удален", "Успех",
+                MessageBox.Show("Выпуск сточных вод успешно удален", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)

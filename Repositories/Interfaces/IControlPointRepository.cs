@@ -11,5 +11,7 @@ namespace PDSCalculatorDesktop.Repositories.Interfaces
     {
         Task<ControlPoint?> GetByNumberAsync(string number);
         Task<bool> HasDischargesAsync(int controlPointId);
+        Task<IEnumerable<ControlPoint>> GetAllWithWaterUseTypeAsync();
+        Task<ControlPoint?> GetByIdWithWaterUseTypeAsync(int id);
     }
 }

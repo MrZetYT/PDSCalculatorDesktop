@@ -10,7 +10,7 @@
 
         public int WaterUseTypeId { get; set; }
 
-        public required WaterUseType WaterUseType { get; set; }
+        public WaterUseType? WaterUseType { get; set; }
 
         public ICollection<Discharge> Discharges { get; set; } = new List<Discharge>();
 

@@ -16,7 +16,24 @@ namespace PDSCalculatorDesktop.Repositories
 
         public async Task<Substance?> GetByCodeAsync(string code)
         {
-            return await _context.Set<Substance>().FirstOrDefaultAsync(n => n.Code == code);
+            return await _context.Set<Substance>()
+                .FirstOrDefaultAsync(s => s.Code == code);
+        }
+
+        public async Task<IEnumerable<Substance>> GetAllWithCharacteristicsAsync()
+        {
+            return await _context.Set<Substance>()
+                .Include(s => s.WaterUseCharacteristics)
+                .ThenInclude(swc => swc.WaterUseType)
+                .ToListAsync();
+        }
+
+        public async Task<Substance?> GetByIdWithCharacteristicsAsync(int id)
+        {
+            return await _context.Set<Substance>()
+                .Include(s => s.WaterUseCharacteristics)
+                .ThenInclude(swc => swc.WaterUseType)
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
     }
 }

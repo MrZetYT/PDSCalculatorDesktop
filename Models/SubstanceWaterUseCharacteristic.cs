@@ -22,8 +22,8 @@
 
         public double PDK { get; set; }
 
-        public required Substance Substance { get; set; }
+        public Substance? Substance { get; set; }
 
-        public required WaterUseType WaterUseType { get; set; }
+        public WaterUseType? WaterUseType { get; set; }
     }
 }

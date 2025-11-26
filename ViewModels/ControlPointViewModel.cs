@@ -1,24 +1,24 @@
-﻿using PDSCalculatorDesktop.Commands;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using PDSCalculatorDesktop.Commands;
 using PDSCalculatorDesktop.Models;
 using PDSCalculatorDesktop.Services;
 using PDSCalculatorDesktop.Views;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows;
 
 namespace PDSCalculatorDesktop.ViewModels
 {
     public class ControlPointViewModel : ViewModelBase
     {
         private readonly IControlPointService _controlPointService;
+        private readonly IWaterUseTypeService _waterUseTypeService;
         private ControlPoint? _selectedControlPoint;
+        private string _searchText = string.Empty;
+        private bool _isLoading = false;
 
-        public ObservableCollection<ControlPoint> ControlPoints { get; set; }
+        public ObservableCollection<ControlPoint> ControlPoints { get; }
 
         public ControlPoint? SelectedControlPoint
         {
@@ -32,17 +32,35 @@ namespace PDSCalculatorDesktop.ViewModels
             }
         }
 
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (SetProperty(ref _searchText, value))
+                {
+                    LoadControlPointsAsync();
+                }
+            }
+        }
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
         public ICommand AddCommand { get; }
-
         public ICommand EditCommand { get; }
-
         public ICommand DeleteCommand { get; }
-
         public ICommand RefreshCommand { get; }
 
-        public ControlPointViewModel(IControlPointService controlPointService)
+        public ControlPointViewModel(
+            IControlPointService controlPointService,
+            IWaterUseTypeService waterUseTypeService)
         {
             _controlPointService = controlPointService;
+            _waterUseTypeService = waterUseTypeService;
             ControlPoints = new ObservableCollection<ControlPoint>();
 
             AddCommand = new RelayCommand(_ => AddControlPoint());
@@ -64,9 +82,19 @@ namespace PDSCalculatorDesktop.ViewModels
 
         private async void LoadControlPointsAsync()
         {
+            IsLoading = true;
             try
             {
                 var controlPoints = await _controlPointService.GetAllControlPointsAsync();
+
+                if (!string.IsNullOrWhiteSpace(SearchText))
+                {
+                    controlPoints = controlPoints.Where(c =>
+                        c.Number.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        c.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        (c.WaterUseType?.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false)
+                    );
+                }
 
                 ControlPoints.Clear();
                 foreach (var controlPoint in controlPoints)
@@ -79,23 +107,25 @@ namespace PDSCalculatorDesktop.ViewModels
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         private void AddControlPoint()
         {
             var window = new ControlPointEditView();
-
             var viewModel = new ControlPointEditViewModel(
                 _controlPointService,
+                _waterUseTypeService,
                 window,
                 null
             );
 
             window.DataContext = viewModel;
 
-            var result = window.ShowDialog();
-
-            if (result == true)
+            if (window.ShowDialog() == true)
             {
                 LoadControlPointsAsync();
             }
@@ -106,18 +136,16 @@ namespace PDSCalculatorDesktop.ViewModels
             if (SelectedControlPoint == null) return;
 
             var window = new ControlPointEditView();
-
             var viewModel = new ControlPointEditViewModel(
                 _controlPointService,
+                _waterUseTypeService,
                 window,
                 SelectedControlPoint
             );
 
             window.DataContext = viewModel;
 
-            var result = window.ShowDialog();
-
-            if (result == true)
+            if (window.ShowDialog() == true)
             {
                 LoadControlPointsAsync();
             }
@@ -139,10 +167,9 @@ namespace PDSCalculatorDesktop.ViewModels
             try
             {
                 await _controlPointService.DeleteControlPointAsync(SelectedControlPoint.Id);
-
                 ControlPoints.Remove(SelectedControlPoint);
 
-                MessageBox.Show("Створ успешно удален", "Успех",
+                MessageBox.Show("Контрольный створ успешно удален", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)

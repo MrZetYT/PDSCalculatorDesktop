@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PDSCalculatorDesktop.Repositories
 {
-    public class Repository<T>: IRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         protected readonly ApplicationDbContext _context;
 
@@ -50,7 +50,6 @@ namespace PDSCalculatorDesktop.Repositories
                 return false;
 
             _context.Set<T>().Remove(entity);
-
             await _context.SaveChangesAsync();
             return true;
         }

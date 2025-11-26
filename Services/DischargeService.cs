@@ -13,23 +13,19 @@ namespace PDSCalculatorDesktop.Services
     public class DischargeService : IDischargeService
     {
         private readonly IDischargeRepository _dischargeRepository;
-        private readonly IEnterpriseRepository _enterpriseRepository;
-        private readonly IControlPointRepository _controlPointRepository;
         private readonly ITechnicalParametersRepository _technicalParametersRepository;
 
-        public DischargeService(IDischargeRepository dischargeRepository, IEnterpriseRepository enterpriseRepository,
-                                IControlPointRepository controlPointRepository, ITechnicalParametersRepository technicalParametersRepository)
+        public DischargeService(
+            IDischargeRepository dischargeRepository,
+            ITechnicalParametersRepository technicalParametersRepository)
         {
             _dischargeRepository = dischargeRepository;
-            _enterpriseRepository = enterpriseRepository;
-            _controlPointRepository = controlPointRepository;
             _technicalParametersRepository = technicalParametersRepository;
         }
 
         public async Task<Discharge?> GetDischargeByIdAsync(int id)
         {
-            if (id <= 0) return null;
-            return await _dischargeRepository.GetValueAsync(id);
+            return await _dischargeRepository.GetByIdWithRelatedDataAsync(id);
         }
 
         public async Task<IEnumerable<Discharge>> GetAllDischargesAsync()
@@ -37,131 +33,57 @@ namespace PDSCalculatorDesktop.Services
             return await _dischargeRepository.GetAllAsync();
         }
 
-        public async Task<Discharge> CreateDischargeAsync(string code, string name, DateTime registrationAt,
-            int enterpriseId, int controlPointId)
+        public async Task<IEnumerable<Discharge>> GetByEnterpriseAndDateAsync(int enterpriseId, DateTime dateTime)
         {
-            if (string.IsNullOrEmpty(code))
-            {
-                throw new ArgumentException("Не введен код выпуска", nameof(code));
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Не введено название выпуска", nameof(name));
-            }
-
-            var enterprise = await _enterpriseRepository.GetValueAsync(enterpriseId);
-
-            if (enterprise == null)
-            {
-                throw new ArgumentException("Предприятия с таким ID не найдено");
-            }
-
-            var controlPoint = await _controlPointRepository.GetValueAsync(controlPointId);
-
-            if (controlPoint == null)
-            {
-                throw new ArgumentException("Контрольного створа с таким ID не найдено");
-            }
-
-            return await _dischargeRepository.CreateAsync(new Discharge() {
-                Code = code, Name = name, RegistrationAt = registrationAt,
-                EnterpriseId = enterpriseId, ControlPointId = controlPointId,
-                Enterprise = enterprise!,
-                ControlPoint = controlPoint!});
+            return await _dischargeRepository.GetByEnterpriseAndDateAsync(enterpriseId, dateTime);
         }
 
-        public async Task<Discharge> UpdateDischargeAsync(int id, string code, string name, DateTime registrationAt,
-            int enterpriseId, int controlPointId)
+        public async Task<Discharge> CreateDischargeAsync(
+            string code, string name, DateTime registrationDate, int enterpriseId, int controlPointId)
         {
-            var discharge = await _dischargeRepository.GetValueAsync(id);
-            if (discharge == null)
+            var discharge = new Discharge
             {
-                throw new ArgumentException("Выпуска с таким Id не существует", nameof (id));
-            }
+                Code = code,
+                Name = name,
+                RegistrationDate = registrationDate,
+                EnterpriseId = enterpriseId,
+                ControlPointId = controlPointId,
+                Enterprise = null,
+                ControlPoint = null
+            };
 
-            if (string.IsNullOrEmpty(code))
-            {
-                throw new ArgumentException("Не введен код выпуска", nameof(code));
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Не введено название выпуска", nameof(name));
-            }
+            return await _dischargeRepository.CreateAsync(discharge);
+        }
 
-            var enterprise = await _enterpriseRepository.GetValueAsync(enterpriseId);
+        public async Task<Discharge> UpdateDischargeAsync(
+            int id, string code, string name, DateTime registrationDate, int enterpriseId, int controlPointId)
+        {
+            var discharge = await _dischargeRepository.GetValueAsync(id)
+                ?? throw new ArgumentException("Выпуск не найден");
 
-            if (enterprise == null)
-            {
-                throw new ArgumentException("Предприятия с таким ID не найдено");
-            }
-
-            var controlPoint = await _controlPointRepository.GetValueAsync(controlPointId);
-
-            if (controlPoint == null)
-            {
-                throw new ArgumentException("Контрольного створа с таким ID не найдено");
-            }
-
-            discharge.Name = name;
             discharge.Code = code;
-            discharge.RegistrationAt = registrationAt;
-            discharge.Enterprise = enterprise;
+            discharge.Name = name;
+            discharge.RegistrationDate = registrationDate;
             discharge.EnterpriseId = enterpriseId;
-            discharge.ControlPoint = controlPoint;
             discharge.ControlPointId = controlPointId;
 
-            await _dischargeRepository.SaveChangesAsync();
-
-            return discharge;
+            return await _dischargeRepository.UpdateAsync(discharge);
         }
 
         public async Task<bool> DeleteDischargeAsync(int id)
         {
-            var discharge = await _dischargeRepository.GetValueAsync(id);
-            if (discharge == null)
-            {
-                throw new ArgumentException("Выпуска с таким Id не существует", nameof(id));
-            }
-
-            if (await _dischargeRepository.HasTechnicalParametersAsync(id))
-            {
-                throw new InvalidOperationException("Невозможно удалить выпуск. У него имеются технические параметры");
-            }
-
             return await _dischargeRepository.DeleteAsync(id);
         }
 
-        public async Task<TechnicalParameters> AddTechnicalParametersAsync(int dischargeId, DateTime validFrom, double diameter,
-                                                              double flowRate, double waterFlowVelocity, double dischargeAngle,
-                                                              double distanceToWaterSurface, double distanceToShore, double distanceToControlPoint)
+        public async Task<TechnicalParameters> AddTechnicalParametersAsync(
+            int dischargeId, DateTime validFrom, double diameter, double flowRate,
+            double waterFlowVelocity, double dischargeAngle, double distanceToWaterSurface,
+            double distanceToShore, double distanceToControlPoint)
         {
-            var existingDischarge = await _dischargeRepository.GetValueAsync(dischargeId);
-            if(existingDischarge == null)
-                throw new ArgumentException("Выпуска с таким Id не существует", nameof(dischargeId));
-
-            if (diameter <= 0)
-                throw new ArgumentException("Диаметр должен быть больше нуля", nameof(diameter));
-
-            if (flowRate <= 0)
-                throw new ArgumentException("Скорость потока должна быть больше нуля", nameof(flowRate));
-
-            if (waterFlowVelocity <= 0)
-                throw new ArgumentException("Скорость потока воды должна быть больше нуля", nameof(waterFlowVelocity));
-
-            if (dischargeAngle <= 0)
-                throw new ArgumentException("Угол разгрузки должен быть больше нуля", nameof(dischargeAngle));
-
-            if (distanceToWaterSurface <= 0)
-                throw new ArgumentException("Расстояние до поверхности воды должно быть больше нуля", nameof(distanceToWaterSurface));
-
-            if (distanceToShore <= 0)
-                throw new ArgumentException("Расстояние до берега должно быть больше нуля", nameof(distanceToShore));
-
-            if (distanceToControlPoint <= 0)
-                throw new ArgumentException("Расстояние до контрольного створа должно быть больше нуля", nameof(distanceToControlPoint));
-
-            var technicalParameters = new TechnicalParameters()
+            var technicalParameters = new TechnicalParameters
             {
+                DischargeId = dischargeId,
+                ValidFrom = validFrom,
                 Diameter = diameter,
                 FlowRate = flowRate,
                 WaterFlowVelocity = waterFlowVelocity,
@@ -169,9 +91,7 @@ namespace PDSCalculatorDesktop.Services
                 DistanceToWaterSurface = distanceToWaterSurface,
                 DistanceToShore = distanceToShore,
                 DistanceToControlPoint = distanceToControlPoint,
-                ValidFrom = validFrom,
-                Discharge = existingDischarge,
-                DischargeId = dischargeId
+                Discharge = null
             };
 
             return await _technicalParametersRepository.CreateAsync(technicalParameters);
@@ -179,10 +99,15 @@ namespace PDSCalculatorDesktop.Services
 
         public async Task<IEnumerable<TechnicalParameters>> GetTechnicalParametersHistoryAsync(int dischargeId)
         {
-            return await _dischargeRepository.GetTechnicalParametersAsync(dischargeId);
+            return await _dischargeRepository.GetTechnicalParametersHistoryAsync(dischargeId);
         }
 
-        public async Task<IEnumerable<Discharge>> GetAllDischargesWithRelatedDataAsync()
+        public async Task<TechnicalParameters?> GetCurrentTechnicalParametersAsync(int dischargeId)
+        {
+            return await _dischargeRepository.GetCurrentTechnicalParametersAsync(dischargeId);
+        }
+
+        public async Task<IEnumerable<Discharge>> GetAllWithRelatedDataAsync()
         {
             return await _dischargeRepository.GetAllWithRelatedDataAsync();
         }

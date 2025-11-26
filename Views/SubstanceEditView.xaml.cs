@@ -23,16 +23,6 @@ namespace PDSCalculatorDesktop.Views
         public SubstanceEditView()
         {
             InitializeComponent();
-
-            this.Loaded += (s, e) =>
-            {
-                if (DataContext is SubstanceEditViewModel vm)
-                {
-                    // Устанавливаем ItemsSource программно
-                    HazardClassComboBox.ItemsSource = vm.HazardClasses;
-                    HazardClassComboBox.SelectedItem = vm.HazardClass;
-                }
-            };
         }
     }
 }

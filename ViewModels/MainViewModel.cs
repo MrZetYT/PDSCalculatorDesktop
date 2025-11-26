@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using PDSCalculatorDesktop.Commands;
 using PDSCalculatorDesktop.Views;
@@ -14,7 +15,6 @@ namespace PDSCalculatorDesktop.ViewModels
         public ICommand OpenDischargesCommand { get; }
         public ICommand OpenControlPointsCommand { get; }
         public ICommand OpenSubstancesCommand { get; }
-        public ICommand OpenMeasurementsCommand { get; }
         public ICommand ExitCommand { get; }
 
         public MainViewModel(IServiceProvider serviceProvider)
@@ -25,7 +25,6 @@ namespace PDSCalculatorDesktop.ViewModels
             OpenDischargesCommand = new RelayCommand(_ => OpenDischarges());
             OpenControlPointsCommand = new RelayCommand(_ => OpenControlPoints());
             OpenSubstancesCommand = new RelayCommand(_ => OpenSubstances());
-            OpenMeasurementsCommand = new RelayCommand(_ => OpenMeasurements());
             ExitCommand = new RelayCommand(_ => Exit());
         }
 
@@ -53,11 +52,6 @@ namespace PDSCalculatorDesktop.ViewModels
             view.ShowDialog();
         }
 
-        private void OpenMeasurements()
-        {
-            var view = _serviceProvider.GetRequiredService<MeasurementView>();
-            view.ShowDialog();
-        }
         private void Exit()
         {
             Application.Current.Shutdown();

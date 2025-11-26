@@ -11,6 +11,6 @@ namespace PDSCalculatorDesktop.Repositories
 {
     public class TechnicalParametersRepository : Repository<TechnicalParameters>, ITechnicalParametersRepository
     {
-        public TechnicalParametersRepository(ApplicationDbContext contex) : base(contex) { }
+        public TechnicalParametersRepository(ApplicationDbContext context) : base(context) { }
     }
 }

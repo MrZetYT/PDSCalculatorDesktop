@@ -4,40 +4,26 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:converters="clr-namespace:PDSCalculatorDesktop.Converters"
         mc:Ignorable="d"
         Title="Управление загрязняющими веществами" 
         Height="700" 
-        Width="1250"
+        Width="1050"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}">
 
-    <Window.Resources>
-        <converters:HazardClassConverter x:Key="HazardClassConverter"/>
-    </Window.Resources>
-
-    <!-- Основной контейнер с отступами -->
     <materialDesign:Card Margin="20" 
                         Padding="25"
                         UniformCornerRadius="15"
                         materialDesign:ElevationAssist.Elevation="Dp8">
         <Grid>
-            <!-- Определяем строки сетки -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <!-- Заголовок -->
                 <RowDefinition Height="Auto"/>
-                <!-- Поиск -->
                 <RowDefinition Height="*"/>
-                <!-- Таблица -->
                 <RowDefinition Height="Auto"/>
-                <!-- Кнопки -->
             </Grid.RowDefinitions>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 0: Заголовок с иконкой -->
-            <!-- ============================================ -->
             <StackPanel Grid.Row="0" 
                        Orientation="Horizontal" 
                        Margin="0,0,0,20">
@@ -53,9 +39,6 @@
                           Foreground="#F57C00"/>
             </StackPanel>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 1: Поиск с Material Design -->
-            <!-- ============================================ -->
             <materialDesign:Card Grid.Row="1" 
                                 Padding="15"
                                 Margin="0,0,0,20"
@@ -67,7 +50,6 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Иконка поиска -->
                     <materialDesign:PackIcon Grid.Column="0"
                                             Kind="Magnify"
                                             Width="24"
@@ -76,19 +58,15 @@
                                             Margin="0,0,10,0"
                                             Foreground="#F57C00"/>
 
-                    <!-- Поле ввода текста поиска -->
                     <TextBox Grid.Column="1"
                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                            materialDesign:HintAssist.Hint="Поиск по коду, названию, группе ЛФВ или классу опасности"
+                            materialDesign:HintAssist.Hint="Поиск по коду или названию вещества"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             FontSize="14"
                             VerticalContentAlignment="Center"/>
                 </Grid>
             </materialDesign:Card>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 2: Таблица веществ -->
-            <!-- ============================================ -->
             <materialDesign:Card Grid.Row="2"
                                 Margin="0,0,0,20"
                                 UniformCornerRadius="10">
@@ -108,7 +86,6 @@
                          materialDesign:DataGridAssist.ColumnHeaderPadding="20 12 10 12"
                          MouseLeftButtonDown="DataGrid_MouseLeftButtonDown">
 
-                    <!-- Стиль для заголовков колонок -->
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
                             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -117,7 +94,6 @@
                         </Style>
                     </DataGrid.ColumnHeaderStyle>
 
-                    <!-- Стиль для строк -->
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
                             <Setter Property="Height" Value="45"/>
@@ -125,44 +101,25 @@
                             <Setter Property="BorderThickness" Value="4,0,0,0"/>
                             <Setter Property="BorderBrush" Value="Transparent"/>
                             <Style.Triggers>
-                                <!-- Эффект наведения -->
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="#FFE0B2"/>
                                 </Trigger>
-                                <!-- Выделение выбранной строки -->
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="Background" Value="#FFF3E0"/>
                                     <Setter Property="BorderBrush" Value="#F57C00"/>
                                 </Trigger>
-                                <!-- Когда выбрана И навели мышку -->
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsSelected" Value="True"/>
-                                        <Condition Property="IsMouseOver" Value="True"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="Background" Value="#FFCC80"/>
-                                </MultiTrigger>
                             </Style.Triggers>
                         </Style>
                     </DataGrid.RowStyle>
 
-                    <!-- Стиль для ячеек -->
                     <DataGrid.CellStyle>
                         <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
-                                </Trigger>
-                            </Style.Triggers>
                         </Style>
                     </DataGrid.CellStyle>
 
-                    <!-- Определяем колонки -->
                     <DataGrid.Columns>
-                        <!-- Колонка: Код вещества -->
                         <DataGridTextColumn Header="Код вещества"
                                             Binding="{Binding Code}" 
                                             Width="150">
@@ -174,39 +131,17 @@
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
 
-                        <!-- Колонка: Название вещества -->
                         <DataGridTextColumn Header="Название вещества" 
                                            Binding="{Binding Name}" 
-                                           Width="*">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="TextWrapping" Value="Wrap"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                                           Width="*"/>
 
-                        <!-- Колонка: Группа ЛФВ -->
-                        <DataGridTextColumn Header="Группа ЛФВ" 
-                                           Binding="{Binding GroupLFV}" 
-                                           Width="200">
+                        <DataGridTextColumn Header="КНК" 
+                                           Binding="{Binding KNK, StringFormat=N3}" 
+                                           Width="100">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="TextWrapping" Value="Wrap"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-
-                        <!-- Колонка: Класс опасности -->
-                        <DataGridTextColumn Header="Класс опасности" 
-                                           Binding="{Binding HazardClass, Converter={StaticResource HazardClassConverter}}" 
-                                           Width="250">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                     <Setter Property="HorizontalAlignment" Value="Center"/>
-                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
@@ -214,14 +149,10 @@
                 </DataGrid>
             </materialDesign:Card>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 3: Кнопки управления с Material Design -->
-            <!-- ============================================ -->
             <StackPanel Grid.Row="3" 
                        Orientation="Horizontal" 
                        HorizontalAlignment="Left">
 
-                <!-- Кнопка: Добавить (оранжевая) -->
                 <Button Command="{Binding AddCommand}"
                        Style="{StaticResource MaterialDesignRaisedButton}"
                        Width="140"
@@ -230,21 +161,14 @@
                        Background="#F57C00"
                        BorderBrush="#F57C00"
                        materialDesign:ButtonAssist.CornerRadius="10"
-                       materialDesign:ElevationAssist.Elevation="Dp4">
+                       materialDesign:ElevationAssist.Elevation="Dp4"
+                       IsEnabled="{Binding IsLoading, Converter={StaticResource InvertBooleanConverter}}">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Plus" 
-                                                Width="20" 
-                                                Height="20"
-                                                VerticalAlignment="Center"/>
-                        <TextBlock Text="Добавить" 
-                                  Margin="8,0,0,0"
-                                  VerticalAlignment="Center"
-                                  FontSize="13"
-                                  FontWeight="Medium"/>
+                        <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" VerticalAlignment="Center"/>
+                        <TextBlock Text="Добавить" Margin="8,0,0,0" VerticalAlignment="Center" FontSize="13" FontWeight="Medium"/>
                     </StackPanel>
                 </Button>
 
-                <!-- Кнопка: Изменить (синяя) -->
                 <Button Command="{Binding EditCommand}"
                        Style="{StaticResource MaterialDesignRaisedButton}"
                        Width="140"
@@ -253,21 +177,14 @@
                        Background="#2196F3"
                        BorderBrush="#2196F3"
                        materialDesign:ButtonAssist.CornerRadius="10"
-                       materialDesign:ElevationAssist.Elevation="Dp4">
+                       materialDesign:ElevationAssist.Elevation="Dp4"
+                       IsEnabled="{Binding IsLoading, Converter={StaticResource InvertBooleanConverter}}">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Pencil" 
-                                                Width="20" 
-                                                Height="20"
-                                                VerticalAlignment="Center"/>
-                        <TextBlock Text="Изменить" 
-                                  Margin="8,0,0,0"
-                                  VerticalAlignment="Center"
-                                  FontSize="13"
-                                  FontWeight="Medium"/>
+                        <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20" VerticalAlignment="Center"/>
+                        <TextBlock Text="Изменить" Margin="8,0,0,0" VerticalAlignment="Center" FontSize="13" FontWeight="Medium"/>
                     </StackPanel>
                 </Button>
 
-                <!-- Кнопка: Удалить (красная) -->
                 <Button Command="{Binding DeleteCommand}"
                        Style="{StaticResource MaterialDesignRaisedButton}"
                        Width="140"
@@ -276,21 +193,14 @@
                        Background="#D32F2F"
                        BorderBrush="#D32F2F"
                        materialDesign:ButtonAssist.CornerRadius="10"
-                       materialDesign:ElevationAssist.Elevation="Dp4">
+                       materialDesign:ElevationAssist.Elevation="Dp4"
+                       IsEnabled="{Binding IsLoading, Converter={StaticResource InvertBooleanConverter}}">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Delete" 
-                                                Width="20" 
-                                                Height="20"
-                                                VerticalAlignment="Center"/>
-                        <TextBlock Text="Удалить" 
-                                  Margin="8,0,0,0"
-                                  VerticalAlignment="Center"
-                                  FontSize="13"
-                                  FontWeight="Medium"/>
+                        <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" VerticalAlignment="Center"/>
+                        <TextBlock Text="Удалить" Margin="8,0,0,0" VerticalAlignment="Center" FontSize="13" FontWeight="Medium"/>
                     </StackPanel>
                 </Button>
 
-                <!-- Кнопка: Обновить (серая) -->
                 <Button Command="{Binding RefreshCommand}"
                        Style="{StaticResource MaterialDesignRaisedButton}"
                        Width="140"
@@ -298,17 +208,11 @@
                        Background="#616161"
                        BorderBrush="#616161"
                        materialDesign:ButtonAssist.CornerRadius="10"
-                       materialDesign:ElevationAssist.Elevation="Dp4">
+                       materialDesign:ElevationAssist.Elevation="Dp4"
+                       IsEnabled="{Binding IsLoading, Converter={StaticResource InvertBooleanConverter}}">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Refresh" 
-                                                Width="20" 
-                                                Height="20"
-                                                VerticalAlignment="Center"/>
-                        <TextBlock Text="Обновить" 
-                                  Margin="8,0,0,0"
-                                  VerticalAlignment="Center"
-                                  FontSize="13"
-                                  FontWeight="Medium"/>
+                        <materialDesign:PackIcon Kind="Refresh" Width="20" Height="20" VerticalAlignment="Center"/>
+                        <TextBlock Text="Обновить" Margin="8,0,0,0" VerticalAlignment="Center" FontSize="13" FontWeight="Medium"/>
                     </StackPanel>
                 </Button>
             </StackPanel>

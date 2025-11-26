@@ -22,6 +22,6 @@
 
         public double DistanceToControlPoint { get; set; }
 
-        public required Discharge Discharge { get; set; }
+        public Discharge? Discharge { get; set; }
     }
 }

@@ -14,9 +14,9 @@
 
         public int ControlPointId { get; set; }
 
-        public required Enterprise Enterprise { get; set; }
+        public Enterprise? Enterprise { get; set; }
 
-        public required ControlPoint ControlPoint { get; set; }
+        public ControlPoint? ControlPoint { get; set; }
 
         public ICollection<TechnicalParameters> TechnicalParameters { get; set; } = new List<TechnicalParameters>();
 

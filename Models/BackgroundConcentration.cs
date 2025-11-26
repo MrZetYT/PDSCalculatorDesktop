@@ -12,8 +12,8 @@
 
         public DateTime MeasurementDate { get; set; }
 
-        public required ControlPoint ControlPoint { get; set; }
+        public ControlPoint? ControlPoint { get; set; }
 
-        public required Substance Substance { get; set; }
+        public Substance? Substance { get; set; }
     }
 }

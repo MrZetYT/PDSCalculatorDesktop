@@ -10,102 +10,55 @@ namespace PDSCalculatorDesktop.Services
 {
     public class SubstanceService : ISubstanceService
     {
-        private readonly ISubstanceRepository _substanceRepository;
+        private readonly ISubstanceRepository _repository;
 
-        public SubstanceService(ISubstanceRepository substanceRepository)
+        public SubstanceService(ISubstanceRepository repository)
         {
-            _substanceRepository = substanceRepository;
+            _repository = repository;
         }
 
         public async Task<Substance?> GetSubstanceByIdAsync(int id)
         {
-            if (id <= 0) return null;
-            return await _substanceRepository.GetValueAsync(id);
+            return await _repository.GetByIdWithCharacteristicsAsync(id);
         }
 
         public async Task<IEnumerable<Substance>> GetAllSubstancesAsync()
         {
-            return await _substanceRepository.GetAllAsync();
+            return await _repository.GetAllAsync();
         }
 
-        public async Task<Substance> CreateSubstanceAsync(string code,
-                                                          string name,
-                                                          string groupLFV,
-                                                          HazardClass hazardClass)
+        public async Task<IEnumerable<Substance>> GetAllWithCharacteristicsAsync()
         {
-            if (string.IsNullOrEmpty(code))
-            {
-                throw new ArgumentException("Не введен код вещества.", nameof(code));
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Не введено название вещества", nameof(name));
-            }
-            if (string.IsNullOrEmpty(groupLFV))
-            {
-                throw new ArgumentException("Не введена группа лимитирующего фактора вредности вещества", nameof(groupLFV));
-            }
+            return await _repository.GetAllWithCharacteristicsAsync();
+        }
 
-            if (await _substanceRepository.GetByCodeAsync(code) != null)
+        public async Task<Substance> CreateSubstanceAsync(string code, string name, double knk)
+        {
+            var substance = new Substance
             {
-                throw new ArgumentException("Вещество с таким кодом уже существует");
-            }
-
-            return await _substanceRepository.CreateAsync(new Substance() { 
                 Code = code,
                 Name = name,
-                GroupLFV = groupLFV,
-                HazardClass = hazardClass });
+                KNK = knk
+            };
+
+            return await _repository.CreateAsync(substance);
         }
 
-        public async Task<Substance> UpdateSubstanceAsync(int id, string code, string name, string groupLFV, HazardClass hazardClass)
+        public async Task<Substance> UpdateSubstanceAsync(int id, string code, string name, double knk)
         {
-            var substance = await _substanceRepository.GetValueAsync(id);
+            var substance = await _repository.GetValueAsync(id)
+                ?? throw new ArgumentException("Вещество не найдено");
 
-            if (substance == null)
-            {
-                throw new ArgumentException("Вещества с таким Id не существует", nameof(id));
-            }
-
-            if (string.IsNullOrEmpty(code))
-            {
-                throw new ArgumentException("Не введен код вещества.", nameof(code));
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Не введено название вещества", nameof(name));
-            }
-            if (string.IsNullOrEmpty(groupLFV))
-            {
-                throw new ArgumentException("Не введена группа лимитирующего фактора вредности вещества", nameof(groupLFV));
-            }
-
-
-            var existingSubstance = await _substanceRepository.GetByCodeAsync(code);
-            if (existingSubstance != null && existingSubstance.Id != id)
-            {
-                throw new ArgumentException("Этот код вещества занят", nameof(code));
-            }
-
-            substance.Name = name;
             substance.Code = code;
-            substance.GroupLFV = groupLFV;
-            substance.HazardClass = hazardClass;
+            substance.Name = name;
+            substance.KNK = knk;
 
-            await _substanceRepository.SaveChangesAsync();
-
-            return substance;
+            return await _repository.UpdateAsync(substance);
         }
 
         public async Task<bool> DeleteSubstanceAsync(int id)
         {
-            var substance = await _substanceRepository.GetValueAsync(id);
-            if (substance == null)
-            {
-                throw new ArgumentException("Вещества с таким Id не существует", nameof(id));
-            }
-
-            return await _substanceRepository.DeleteAsync(id);
+            return await _repository.DeleteAsync(id);
         }
     }
 }

@@ -13,62 +13,40 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}">
 
-    <!-- Основной контейнер с отступами и тенью -->
     <materialDesign:Card Margin="20" 
                         Padding="25"
                         UniformCornerRadius="15">
 
         <Grid>
-            <!-- Определяем 7 строк -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <!-- Строка 0: Подпись "Номер створа" -->
                 <RowDefinition Height="Auto"/>
-                <!-- Строка 1: Поле ввода номера -->
                 <RowDefinition Height="Auto"/>
-                <!-- Строка 2: Подпись "Название створа" -->
                 <RowDefinition Height="Auto"/>
-                <!-- Строка 3: Поле ввода названия -->
                 <RowDefinition Height="Auto"/>
-                <!-- Строка 4: Подпись "Расстояние" -->
                 <RowDefinition Height="Auto"/>
-                <!-- Строка 5: Поле ввода расстояния -->
                 <RowDefinition Height="*"/>
-                <!-- Строка 6: Пустое место + кнопки внизу -->
             </Grid.RowDefinitions>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 0: Подпись "Номер створа" -->
-            <!-- ============================================ -->
             <TextBlock Grid.Row="0" 
                        Text="Номер створа:"
                        Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
                        Foreground="#00897B"
                        Margin="0,0,0,5"/>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 1: Поле ввода номера створа -->
-            <!-- ============================================ -->
             <TextBox Grid.Row="1"
                      Text="{Binding Number, UpdateSourceTrigger=PropertyChanged}"
                      materialDesign:HintAssist.Hint="Введите уникальный номер"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      FontSize="14"
-                     Margin="0,0,0,20">
-            </TextBox>
+                     Margin="0,0,0,20"/>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 2: Подпись "Название створа" -->
-            <!-- ============================================ -->
             <TextBlock Grid.Row="2" 
                        Text="Название створа:"
                        Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
                        Foreground="#00897B"
                        Margin="0,0,0,5"/>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 3: Поле ввода названия створа -->
-            <!-- ============================================ -->
             <TextBox Grid.Row="3"
                      Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
                      materialDesign:HintAssist.Hint="Введите полное название"
@@ -76,34 +54,31 @@
                      FontSize="14"
                      Margin="0,0,0,20"/>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 4: Подпись "Расстояние от выпуска" -->
-            <!-- ============================================ -->
             <TextBlock Grid.Row="4" 
-                       Text="Расстояние от выпуска (метры):"
+                       Text="Тип водопользования:"
                        Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
                        Foreground="#00897B"
                        Margin="0,0,0,5"/>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 5: Поле ввода расстояния -->
-            <!-- ============================================ -->
-            <TextBox Grid.Row="5"
-                     Text="{Binding Distance, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
-                     materialDesign:HintAssist.Hint="Введите расстояние (например, 250.50)"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                     FontSize="14"
-                     Margin="0,0,0,20"/>
+            <ComboBox Grid.Row="5"
+                      ItemsSource="{Binding WaterUseTypes}"
+                      SelectedItem="{Binding SelectedWaterUseType, UpdateSourceTrigger=PropertyChanged}"
+                      materialDesign:HintAssist.Hint="Выберите тип водопользования"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                      FontSize="14"
+                      Margin="0,0,0,20">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 6: Кнопки в правом нижнем углу -->
-            <!-- ============================================ -->
             <StackPanel Grid.Row="6" 
                         Orientation="Horizontal" 
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom">
 
-                <!-- Кнопка: Сохранить (бирюзовая, с иконкой) -->
                 <Button Command="{Binding SaveCommand}"
                         Style="{StaticResource MaterialDesignRaisedButton}"
                         Width="140"
@@ -112,7 +87,8 @@
                         Background="#00897B"
                         BorderBrush="#00897B"
                         materialDesign:ButtonAssist.CornerRadius="10"
-                        materialDesign:ElevationAssist.Elevation="Dp4">
+                        materialDesign:ElevationAssist.Elevation="Dp4"
+                        IsEnabled="{Binding IsSaving, Converter={StaticResource InvertBooleanConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="ContentSave" 
                                                 Width="20" 
@@ -126,7 +102,6 @@
                     </StackPanel>
                 </Button>
 
-                <!-- Кнопка: Отменить (серая, с иконкой) -->
                 <Button Command="{Binding CancelCommand}"
                         Style="{StaticResource MaterialDesignRaisedButton}"
                         Width="140"
@@ -134,7 +109,8 @@
                         Background="#757575"
                         BorderBrush="#757575"
                         materialDesign:ButtonAssist.CornerRadius="10"
-                        materialDesign:ElevationAssist.Elevation="Dp4">
+                        materialDesign:ElevationAssist.Elevation="Dp4"
+                        IsEnabled="{Binding IsSaving, Converter={StaticResource InvertBooleanConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Close" 
                                                 Width="20" 

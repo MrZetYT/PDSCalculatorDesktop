@@ -12,19 +12,33 @@ namespace PDSCalculatorDesktop.Repositories
 {
     public class ControlPointRepository : Repository<ControlPoint>, IControlPointRepository
     {
-        public ControlPointRepository(ApplicationDbContext context) : base(context)
-        {
-        }
+        public ControlPointRepository(ApplicationDbContext context) : base(context) { }
 
         public async Task<ControlPoint?> GetByNumberAsync(string number)
         {
-            return await _context.Set<ControlPoint>().FirstOrDefaultAsync(n=> n.Number == number);
+            return await _context.Set<ControlPoint>()
+                .Include(cp => cp.WaterUseType)
+                .FirstOrDefaultAsync(cp => cp.Number == number);
         }
 
         public async Task<bool> HasDischargesAsync(int controlPointId)
         {
             return await _context.Discharges
                 .AnyAsync(d => d.ControlPointId == controlPointId);
+        }
+
+        public async Task<IEnumerable<ControlPoint>> GetAllWithWaterUseTypeAsync()
+        {
+            return await _context.Set<ControlPoint>()
+                .Include(cp => cp.WaterUseType)
+                .ToListAsync();
+        }
+
+        public async Task<ControlPoint?> GetByIdWithWaterUseTypeAsync(int id)
+        {
+            return await _context.Set<ControlPoint>()
+                .Include(cp => cp.WaterUseType)
+                .FirstOrDefaultAsync(cp => cp.Id == id);
         }
     }
 }

@@ -32,20 +32,26 @@ namespace PDSCalculatorDesktop
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
+            //TODO: Сделать новую миграцию (чат с этим есть в Клоде)
+
             // Регистрация Repository
             services.AddScoped<IEnterpriseRepository, EnterpriseRepository>();
             services.AddScoped<IDischargeRepository, DischargeRepository>();
             services.AddScoped<IControlPointRepository, ControlPointRepository>();
             services.AddScoped<ITechnicalParametersRepository, TechnicalParametersRepository>();
             services.AddScoped<ISubstanceRepository, SubstanceRepository>();
-            services.AddScoped<IMeasurementRepository, MeasurementRepository>();
+            services.AddScoped<IWaterUseTypeRepository, WaterUseTypeRepository>();
+            services.AddScoped<IBackgroundConcentrationRepository, BackgroundConcentrationRepository>();
+            services.AddScoped<IDischargeConcentrationRepository, DischargeConcentrationRepository>();
 
             // Регистрация Services
             services.AddScoped<IEnterpriseService, EnterpriseService>();
             services.AddScoped<IDischargeService, DischargeService>();
             services.AddScoped<IControlPointService, ControlPointService>();
-            services.AddScoped<ISubstanceService,  SubstanceService>();
-            services.AddScoped<IMeasurementService, MeasurementService>();
+            services.AddScoped<ISubstanceService, SubstanceService>();
+            services.AddScoped<IWaterUseTypeService, WaterUseTypeService>();
+            services.AddScoped<IBackgroundConcentrationService, BackgroundConcentrationService>();
+            services.AddScoped<IDischargeConcentrationService, DischargeConcentrationService>();
 
             // Регистрация ViewModels
             services.AddTransient<MainViewModel>();
@@ -53,7 +59,6 @@ namespace PDSCalculatorDesktop
             services.AddTransient<DischargeViewModel>();
             services.AddTransient<ControlPointViewModel>();
             services.AddTransient<SubstanceViewModel>();
-            services.AddTransient<MeasurementViewModel>();
 
             // Регистрация Views
             services.AddTransient<MainWindow>();
@@ -61,7 +66,6 @@ namespace PDSCalculatorDesktop
             services.AddTransient<DischargeView>();
             services.AddTransient<ControlPointView>();
             services.AddTransient<SubstanceView>();
-            services.AddTransient<MeasurementView>();
 
             _serviceProvider = services.BuildServiceProvider();
 

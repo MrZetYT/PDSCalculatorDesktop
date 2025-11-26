@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using PDSCalculatorDesktop.Commands;
@@ -16,8 +15,9 @@ namespace PDSCalculatorDesktop.ViewModels
         private readonly IEnterpriseService _enterpriseService;
         private Enterprise? _selectedEnterprise;
         private string _searchText = string.Empty;
+        private bool _isLoading = false;
 
-        public ObservableCollection<Enterprise> Enterprises { get; set; }
+        public ObservableCollection<Enterprise> Enterprises { get; }
 
         public Enterprise? SelectedEnterprise
         {
@@ -43,12 +43,15 @@ namespace PDSCalculatorDesktop.ViewModels
             }
         }
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
         public ICommand AddCommand { get; }
-
         public ICommand EditCommand { get; }
-
         public ICommand DeleteCommand { get; }
-
         public ICommand RefreshCommand { get; }
 
         public EnterpriseViewModel(IEnterpriseService enterpriseService)
@@ -75,6 +78,7 @@ namespace PDSCalculatorDesktop.ViewModels
 
         private async void LoadEnterprisesAsync()
         {
+            IsLoading = true;
             try
             {
                 var enterprises = await _enterpriseService.GetAllEnterprisesAsync();
@@ -98,12 +102,15 @@ namespace PDSCalculatorDesktop.ViewModels
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         private void AddEnterprise()
         {
             var window = new EnterpriseEditView();
-
             var viewModel = new EnterpriseEditViewModel(
                 _enterpriseService,
                 window,
@@ -112,9 +119,7 @@ namespace PDSCalculatorDesktop.ViewModels
 
             window.DataContext = viewModel;
 
-            var result = window.ShowDialog();
-
-            if(result == true)
+            if (window.ShowDialog() == true)
             {
                 LoadEnterprisesAsync();
             }
@@ -125,7 +130,6 @@ namespace PDSCalculatorDesktop.ViewModels
             if (SelectedEnterprise == null) return;
 
             var window = new EnterpriseEditView();
-
             var viewModel = new EnterpriseEditViewModel(
                 _enterpriseService,
                 window,
@@ -134,9 +138,7 @@ namespace PDSCalculatorDesktop.ViewModels
 
             window.DataContext = viewModel;
 
-            var result = window.ShowDialog();
-
-            if(result == true)
+            if (window.ShowDialog() == true)
             {
                 LoadEnterprisesAsync();
             }
@@ -158,7 +160,6 @@ namespace PDSCalculatorDesktop.ViewModels
             try
             {
                 await _enterpriseService.DeleteEnterpriseAsync(SelectedEnterprise.Id);
-
                 Enterprises.Remove(SelectedEnterprise);
 
                 MessageBox.Show("Предприятие успешно удалено", "Успех",

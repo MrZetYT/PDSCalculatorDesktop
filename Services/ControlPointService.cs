@@ -10,98 +10,60 @@ namespace PDSCalculatorDesktop.Services
 {
     public class ControlPointService : IControlPointService
     {
-        private readonly IControlPointRepository _controlPointRepository;
+        private readonly IControlPointRepository _repository;
 
-        public ControlPointService(IControlPointRepository controlPointRepository)
+        public ControlPointService(IControlPointRepository repository)
         {
-            _controlPointRepository = controlPointRepository;
+            _repository = repository;
         }
 
         public async Task<ControlPoint?> GetControlPointByIdAsync(int id)
         {
-            if (id <= 0) return null;
-            return await _controlPointRepository.GetValueAsync(id);
+            return await _repository.GetByIdWithWaterUseTypeAsync(id);
         }
 
         public async Task<IEnumerable<ControlPoint>> GetAllControlPointsAsync()
         {
-            return await _controlPointRepository.GetAllAsync();
+            return await _repository.GetAllAsync();
         }
 
-        public async Task<ControlPoint> CreateControlPointAsync(string number, string name, double distance)
+        public async Task<IEnumerable<ControlPoint>> GetAllWithWaterUseTypeAsync()
         {
-            if (string.IsNullOrEmpty(number))
-            {
-                throw new ArgumentException("Не введен номер створа.", nameof(number));
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Не введено название створа", nameof(name));
-            }
-            if (distance <= 0)
-            {
-                throw new ArgumentException("Расстояние должно быть больше нуля", nameof(distance));
-            }
-            if (await _controlPointRepository.GetByNumberAsync(number) != null)
-            {
-                throw new ArgumentException("Контрольный створ с таким номером уже существует");
-            }
-
-            return await _controlPointRepository.CreateAsync(new ControlPoint() { Number = number, Name = name, Distance = distance });
+            return await _repository.GetAllWithWaterUseTypeAsync();
         }
 
-        public async Task<ControlPoint> UpdateControlPointAsync(int id, string number, string name, double distance)
+        public async Task<ControlPoint> CreateControlPointAsync(string number, string name, int waterUseTypeId)
         {
-            var controlPoint = await _controlPointRepository.GetValueAsync(id);
-
-            if (controlPoint == null)
+            var controlPoint = new ControlPoint
             {
-                throw new ArgumentException("Створа с таким Id не существует", nameof(id));
-            }
+                Number = number,
+                Name = name,
+                WaterUseTypeId = waterUseTypeId,
+                WaterUseType = null
+            };
 
-            if (string.IsNullOrEmpty(number))
-            {
-                throw new ArgumentException("Не введен номер створа.", nameof(number));
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Не введено название створа", nameof(name));
-            }
-            if (distance <= 0)
-            {
-                throw new ArgumentException("Расстояние должно быть больше нуля", nameof(distance));
-            }
+            return await _repository.CreateAsync(controlPoint);
+        }
 
-            var existingControlPoint = await _controlPointRepository.GetByNumberAsync(number);
-            if (existingControlPoint != null && existingControlPoint.Id != id)
-            {
-                throw new ArgumentException("Этот номер створа занят", nameof(number));
-            }
+        public async Task<ControlPoint> UpdateControlPointAsync(int id, string number, string name, int waterUseTypeId)
+        {
+            var controlPoint = await _repository.GetValueAsync(id)
+                ?? throw new ArgumentException("Контрольный створ не найден");
 
-
-            controlPoint.Name = name;
             controlPoint.Number = number;
-            controlPoint.Distance = distance;
+            controlPoint.Name = name;
+            controlPoint.WaterUseTypeId = waterUseTypeId;
 
-            await _controlPointRepository.SaveChangesAsync();
-
-            return controlPoint;
+            return await _repository.UpdateAsync(controlPoint);
         }
 
         public async Task<bool> DeleteControlPointAsync(int id)
         {
-            var controlPoint = await _controlPointRepository.GetValueAsync(id);
-            if (controlPoint == null)
-            {
-                throw new ArgumentException("Створа с таким Id не существует", nameof(id));
-            }
+            var hasDischarges = await _repository.HasDischargesAsync(id);
+            if (hasDischarges)
+                throw new InvalidOperationException("Невозможно удалить контрольный створ с выпусками");
 
-            if (await _controlPointRepository.HasDischargesAsync(id))
-            {
-                throw new InvalidOperationException("Невозможно удалить створ. У него есть свои выпуски");
-            }
-
-            return await _controlPointRepository.DeleteAsync(id);
+            return await _repository.DeleteAsync(id);
         }
     }
 }

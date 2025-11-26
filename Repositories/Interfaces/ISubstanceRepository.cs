@@ -10,5 +10,7 @@ namespace PDSCalculatorDesktop.Repositories.Interfaces
     public interface ISubstanceRepository : IRepository<Substance>
     {
         Task<Substance?> GetByCodeAsync(string code);
+        Task<IEnumerable<Substance>> GetAllWithCharacteristicsAsync();
+        Task<Substance?> GetByIdWithCharacteristicsAsync(int id);
     }
 }

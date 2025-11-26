@@ -16,7 +16,8 @@ namespace PDSCalculatorDesktop.Repositories
 
         public async Task<Enterprise?> GetByCodeAsync(string code)
         {
-            return await _context.Set<Enterprise>().FirstOrDefaultAsync(n=>n.Code == code);
+            return await _context.Set<Enterprise>()
+                .FirstOrDefaultAsync(e => e.Code == code);
         }
 
         public async Task<bool> HasDischargesAsync(int enterpriseId)

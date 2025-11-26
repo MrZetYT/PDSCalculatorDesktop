@@ -1,15 +1,12 @@
-﻿using PDSCalculatorDesktop.Commands;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using PDSCalculatorDesktop.Commands;
 using PDSCalculatorDesktop.Models;
 using PDSCalculatorDesktop.Services;
 using PDSCalculatorDesktop.Views;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows;
 
 namespace PDSCalculatorDesktop.ViewModels
 {
@@ -18,8 +15,9 @@ namespace PDSCalculatorDesktop.ViewModels
         private readonly ISubstanceService _substanceService;
         private Substance? _selectedSubstance;
         private string _searchText = string.Empty;
+        private bool _isLoading = false;
 
-        public ObservableCollection<Substance> Substances { get; set; }
+        public ObservableCollection<Substance> Substances { get; }
 
         public Substance? SelectedSubstance
         {
@@ -45,12 +43,15 @@ namespace PDSCalculatorDesktop.ViewModels
             }
         }
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
         public ICommand AddCommand { get; }
-
         public ICommand EditCommand { get; }
-
         public ICommand DeleteCommand { get; }
-
         public ICommand RefreshCommand { get; }
 
         public SubstanceViewModel(ISubstanceService substanceService)
@@ -77,17 +78,16 @@ namespace PDSCalculatorDesktop.ViewModels
 
         private async void LoadSubstancesAsync()
         {
+            IsLoading = true;
             try
             {
                 var substances = await _substanceService.GetAllSubstancesAsync();
 
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
-                    substances = substances.Where(e =>
-                        e.Code.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                        e.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                        e.GroupLFV.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                        e.HazardClass.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                    substances = substances.Where(s =>
+                        s.Code.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                        s.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
                     );
                 }
 
@@ -102,12 +102,15 @@ namespace PDSCalculatorDesktop.ViewModels
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         private void AddSubstance()
         {
             var window = new SubstanceEditView();
-
             var viewModel = new SubstanceEditViewModel(
                 _substanceService,
                 window,
@@ -116,9 +119,7 @@ namespace PDSCalculatorDesktop.ViewModels
 
             window.DataContext = viewModel;
 
-            var result = window.ShowDialog();
-
-            if (result == true)
+            if (window.ShowDialog() == true)
             {
                 LoadSubstancesAsync();
             }
@@ -129,7 +130,6 @@ namespace PDSCalculatorDesktop.ViewModels
             if (SelectedSubstance == null) return;
 
             var window = new SubstanceEditView();
-
             var viewModel = new SubstanceEditViewModel(
                 _substanceService,
                 window,
@@ -138,9 +138,7 @@ namespace PDSCalculatorDesktop.ViewModels
 
             window.DataContext = viewModel;
 
-            var result = window.ShowDialog();
-
-            if (result == true)
+            if (window.ShowDialog() == true)
             {
                 LoadSubstancesAsync();
             }
@@ -162,7 +160,6 @@ namespace PDSCalculatorDesktop.ViewModels
             try
             {
                 await _substanceService.DeleteSubstanceAsync(SelectedSubstance.Id);
-
                 Substances.Remove(SelectedSubstance);
 
                 MessageBox.Show("Вещество успешно удалено", "Успех",

@@ -11,90 +11,52 @@ namespace PDSCalculatorDesktop.Services
 {
     public class EnterpriseService : IEnterpriseService
     {
-        private readonly IEnterpriseRepository _enterpriseRepository;
-        
-        public EnterpriseService(IEnterpriseRepository enterpriseRepository)
+        private readonly IEnterpriseRepository _repository;
+
+        public EnterpriseService(IEnterpriseRepository repository)
         {
-            _enterpriseRepository = enterpriseRepository;
+            _repository = repository;
         }
 
         public async Task<Enterprise?> GetEnterpriseByIdAsync(int id)
         {
-            if (id <= 0) return null;
-            return await _enterpriseRepository.GetValueAsync(id);
+            return await _repository.GetValueAsync(id);
         }
 
         public async Task<IEnumerable<Enterprise>> GetAllEnterprisesAsync()
         {
-            return await _enterpriseRepository.GetAllAsync();
+            return await _repository.GetAllAsync();
         }
 
         public async Task<Enterprise> CreateEnterpriseAsync(string code, string name)
         {
-            if (string.IsNullOrEmpty(code))
+            var enterprise = new Enterprise
             {
-                throw new ArgumentException("Не введен код предприятия.", nameof(code));
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Не введено название предприятия", nameof(name));
-            }
+                Code = code,
+                Name = name
+            };
 
-            if (await _enterpriseRepository.GetByCodeAsync(code) != null)
-            {
-                throw new ArgumentException("Предприятие с таким кодом уже существует");
-            }
-
-            return await _enterpriseRepository.CreateAsync(new Enterprise() { Code = code, Name = name });
+            return await _repository.CreateAsync(enterprise);
         }
 
         public async Task<Enterprise> UpdateEnterpriseAsync(int id, string code, string name)
         {
-            var enterprise = await _enterpriseRepository.GetValueAsync(id);
+            var enterprise = await _repository.GetValueAsync(id)
+                ?? throw new ArgumentException("Предприятие не найдено");
 
-            if (enterprise == null)
-            {
-                throw new ArgumentException("Предприятия с таким Id не существует", nameof(id));
-            }
-
-            if (string.IsNullOrEmpty(code))
-            {
-                throw new ArgumentException("Не введен код предприятия.", nameof(code));
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Не введено название предприятия", nameof(name));
-            }
-
-
-            var existingEnterprise = await _enterpriseRepository.GetByCodeAsync(code);
-            if (existingEnterprise != null && existingEnterprise.Id != id)
-            {
-                throw new ArgumentException("Этот код предприятия занят", nameof(code));
-            }
-
-            enterprise.Name = name;
             enterprise.Code = code;
+            enterprise.Name = name;
 
-            await _enterpriseRepository.SaveChangesAsync();
-
-            return enterprise;
+            return await _repository.UpdateAsync(enterprise);
         }
 
         public async Task<bool> DeleteEnterpriseAsync(int id)
         {
-            var enterprise = await _enterpriseRepository.GetValueAsync(id);
-            if(enterprise == null)
-            {
-                throw new ArgumentException("Предприятия с таким Id не существует", nameof(id));
-            }
+            var hasDischarges = await _repository.HasDischargesAsync(id);
+            if (hasDischarges)
+                throw new InvalidOperationException("Невозможно удалить предприятие с выпусками");
 
-            if(await _enterpriseRepository.HasDischargesAsync(id))
-            {
-                throw new InvalidOperationException("Невозможно удалить предприятие. У него есть свои выпуски");
-            }
-
-            return await _enterpriseRepository.DeleteAsync(id);
+            return await _repository.DeleteAsync(id);
         }
     }
 }

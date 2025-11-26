@@ -13,72 +13,85 @@ namespace PDSCalculatorDesktop.Repositories
 {
     public class DischargeRepository : Repository<Discharge>, IDischargeRepository
     {
-        public DischargeRepository(ApplicationDbContext context) : base(context)
-        {
-        }
+        public DischargeRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<IEnumerable<Discharge>> GetByEnterpriseAndDateAsync(int id, DateTime dateTime)
+        public async Task<IEnumerable<Discharge>> GetByEnterpriseAndDateAsync(int enterpriseId, DateTime dateTime)
         {
             return await _context.Set<Discharge>()
-                .Where(n => n.EnterpriseId == id && n.RegistrationAt <= dateTime)
-                .Include(n => n.ControlPoint)
-                .Include(n => n.Enterprise)
-                .Include(n => n.TechnicalParameters)
+                .Where(d => d.EnterpriseId == enterpriseId && d.RegistrationDate <= dateTime)
+                .Include(d => d.Enterprise)
+                .Include(d => d.ControlPoint)
+                .ThenInclude(cp => cp.WaterUseType)
+                .Include(d => d.TechnicalParameters)
+                .Include(d => d.DischargeConcentrations)
+                .ThenInclude(dc => dc.Substance)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Measurement>> GetSubstancesWithConcentrationsAsync(int dischargeId)
+        public async Task<IEnumerable<DischargeConcentration>> GetSubstanceConcentrationsAsync(int dischargeId)
         {
-            return await _context.Measurements
-                .Where(m => m.DischargeId == dischargeId
-                         && m.MeasurementType == MeasurementType.SubstanceConcentration)
-                .Include(m => m.Substance)
-                .OrderBy(m => m.Substance.Name)
+            return await _context.DischargeConcentrations
+                .Where(dc => dc.DischargeId == dischargeId)
+                .Include(dc => dc.Substance)
+                .OrderBy(dc => dc.Substance.Name)
+                .ThenByDescending(dc => dc.MeasurementDate)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Measurement>> GetNormativeIndicatorsByDischargeAsync(int dischargeId)
+        public async Task<IEnumerable<BackgroundConcentration>> GetNormativeIndicatorsAsync(int dischargeId)
         {
             var discharge = await _context.Discharges
-                .Include(n => n.ControlPoint)
-                .FirstOrDefaultAsync(n => n.Id == dischargeId);
+                .Include(d => d.ControlPoint)
+                .FirstOrDefaultAsync(d => d.Id == dischargeId);
 
-            if(discharge?.ControlPoint == null) 
-                return Enumerable.Empty<Measurement>();
+            if (discharge?.ControlPoint == null)
+                return Enumerable.Empty<BackgroundConcentration>();
 
-            return await _context.Measurements
-                .Where(n => n.ControlPointId == discharge.ControlPointId
-                        && (n.MeasurementType == MeasurementType.PDK
-                            || n.MeasurementType == MeasurementType.BackgroundConcentration
-                            || n.MeasurementType == MeasurementType.KNK))
-                .Include(n => n.Substance)
-                .OrderBy(n => n.Substance.Name)
-                .ThenBy(n => n.MeasurementType)
+            return await _context.BackgroundConcentrations
+                .Where(bc => bc.ControlPointId == discharge.ControlPointId)
+                .Include(bc => bc.Substance)
+                .OrderBy(bc => bc.Substance.Name)
+                .ThenByDescending(bc => bc.MeasurementDate)
                 .ToListAsync();
         }
 
-        public async Task<bool> HasTechnicalParametersAsync(int dischargeId)
+        public async Task<IEnumerable<TechnicalParameters>> GetTechnicalParametersHistoryAsync(int dischargeId)
         {
             return await _context.TechnicalParameters
-                .AnyAsync(d => d.DischargeId == dischargeId);
+                .Where(tp => tp.DischargeId == dischargeId)
+                .Include(tp => tp.Discharge)
+                .OrderByDescending(tp => tp.ValidFrom)
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<TechnicalParameters>> GetTechnicalParametersAsync(int dischargeId)
+        public async Task<TechnicalParameters?> GetCurrentTechnicalParametersAsync(int dischargeId)
         {
             return await _context.TechnicalParameters
-                .Where(n=> n.DischargeId == dischargeId)
-                .Include(n=>n.Discharge)
-                .OrderBy(n=> n.ValidFrom)
+                .Where(tp => tp.DischargeId == dischargeId)
+                .OrderByDescending(tp => tp.ValidFrom)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Discharge>> GetAllWithRelatedDataAsync()
+        {
+            return await _context.Set<Discharge>()
+                .Include(d => d.Enterprise)
+                .Include(d => d.ControlPoint)
+                .ThenInclude(cp => cp.WaterUseType)
+                .Include(d => d.TechnicalParameters)
                 .ToListAsync();
         }
 
         public async Task<Discharge?> GetByIdWithRelatedDataAsync(int id)
         {
-            return await _context.Set<Discharge>().Include(n => n.Enterprise).Include(n => n.ControlPoint).FirstOrDefaultAsync(n=>n.Id == id);
-        }
-        public async Task<IEnumerable<Discharge>> GetAllWithRelatedDataAsync()
-        {
-            return await _context.Set<Discharge>().Include(n=>n.Enterprise).Include(n=>n.ControlPoint).ToListAsync();
+            return await _context.Set<Discharge>()
+                .Include(d => d.Enterprise)
+                .Include(d => d.ControlPoint)
+                .ThenInclude(cp => cp.WaterUseType)
+                .Include(d => d.TechnicalParameters)
+                .Include(d => d.DischargeConcentrations)
+                .ThenInclude(dc => dc.Substance)
+                .FirstOrDefaultAsync(d => d.Id == id);
         }
     }
 }

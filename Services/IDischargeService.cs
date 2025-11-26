@@ -11,18 +11,18 @@ namespace PDSCalculatorDesktop.Services
     {
         Task<Discharge?> GetDischargeByIdAsync(int id);
         Task<IEnumerable<Discharge>> GetAllDischargesAsync();
-        Task<Discharge> CreateDischargeAsync(string code, string name, DateTime registrationAt,
-            int enterpriseId, int controlPointId);
-        Task<Discharge> UpdateDischargeAsync(int id, string code, string name, DateTime registrationAt,
-            int enterpriseId, int controlPointId);
+        Task<IEnumerable<Discharge>> GetByEnterpriseAndDateAsync(int enterpriseId, DateTime dateTime);
+        Task<Discharge> CreateDischargeAsync(
+            string code, string name, DateTime registrationDate, int enterpriseId, int controlPointId);
+        Task<Discharge> UpdateDischargeAsync(
+            int id, string code, string name, DateTime registrationDate, int enterpriseId, int controlPointId);
         Task<bool> DeleteDischargeAsync(int id);
-
-        Task<TechnicalParameters> AddTechnicalParametersAsync(int dischargeId, DateTime validFrom, double diameter,
-                                                              double flowRate, double waterFlowVelocity, double dischargeAngle,
-                                                              double distanceToWaterSurface, double distanceToShore, double distanceToControlPoint);
-
+        Task<TechnicalParameters> AddTechnicalParametersAsync(
+            int dischargeId, DateTime validFrom, double diameter, double flowRate,
+            double waterFlowVelocity, double dischargeAngle, double distanceToWaterSurface,
+            double distanceToShore, double distanceToControlPoint);
         Task<IEnumerable<TechnicalParameters>> GetTechnicalParametersHistoryAsync(int dischargeId);
-
-        Task<IEnumerable<Discharge>> GetAllDischargesWithRelatedDataAsync();
+        Task<TechnicalParameters?> GetCurrentTechnicalParametersAsync(int dischargeId);
+        Task<IEnumerable<Discharge>> GetAllWithRelatedDataAsync();
     }
 }

@@ -1,14 +1,11 @@
-﻿using PDSCalculatorDesktop.Commands;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using PDSCalculatorDesktop.Commands;
 using PDSCalculatorDesktop.Models;
 using PDSCalculatorDesktop.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows;
-using System.Collections.ObjectModel;
 
 namespace PDSCalculatorDesktop.ViewModels
 {
@@ -22,51 +19,13 @@ namespace PDSCalculatorDesktop.ViewModels
 
         private string _code = string.Empty;
         private string _name = string.Empty;
-        private DateTime _registrationAt = DateTime.MinValue;
-        private int _enterpriseId = 0;
-        private int _controlPointId = 0;
-        private ObservableCollection<Enterprise> _enterprises = new();
-        private ObservableCollection<ControlPoint> _controlPoints = new();
+        private DateTime _registrationDate = DateTime.Today;
         private Enterprise? _selectedEnterprise;
         private ControlPoint? _selectedControlPoint;
+        private ObservableCollection<Enterprise> _enterprises = new();
+        private ObservableCollection<ControlPoint> _controlPoints = new();
+        private bool _isSaving = false;
 
-        public ObservableCollection<Enterprise> Enterprises
-        {
-            get => _enterprises;
-            set => SetProperty(ref _enterprises, value);
-        }
-
-        public ObservableCollection<ControlPoint> ControlPoints
-        {
-            get => _controlPoints;
-            set => SetProperty(ref _controlPoints, value);
-        }
-
-        public Enterprise? SelectedEnterprise
-        {
-            get => _selectedEnterprise;
-            set
-            {
-                if (SetProperty(ref _selectedEnterprise, value))
-                {
-                    EnterpriseId = value?.Id ?? 0;
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
-        }
-
-        public ControlPoint? SelectedControlPoint
-        {
-            get => _selectedControlPoint;
-            set
-            {
-                if (SetProperty(ref _selectedControlPoint, value))
-                {
-                    ControlPointId = value?.Id ?? 0;
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
-        }
         public string Code
         {
             get => _code;
@@ -91,55 +50,73 @@ namespace PDSCalculatorDesktop.ViewModels
             }
         }
 
-        public DateTime RegistrationAt
+        public DateTime RegistrationDate
         {
-            get => _registrationAt;
+            get => _registrationDate;
             set
             {
-                if (SetProperty(ref _registrationAt, value))
+                if (SetProperty(ref _registrationDate, value))
                 {
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
         }
 
-        public int EnterpriseId
+        public Enterprise? SelectedEnterprise
         {
-            get => _enterpriseId;
+            get => _selectedEnterprise;
             set
             {
-                if (SetProperty(ref _enterpriseId, value))
+                if (SetProperty(ref _selectedEnterprise, value))
                 {
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
         }
 
-        public int ControlPointId
+        public ControlPoint? SelectedControlPoint
         {
-            get => _controlPointId;
+            get => _selectedControlPoint;
             set
             {
-                if (SetProperty(ref _controlPointId, value))
+                if (SetProperty(ref _selectedControlPoint, value))
                 {
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
+        }
+
+        public ObservableCollection<Enterprise> Enterprises
+        {
+            get => _enterprises;
+            set => SetProperty(ref _enterprises, value);
+        }
+
+        public ObservableCollection<ControlPoint> ControlPoints
+        {
+            get => _controlPoints;
+            set => SetProperty(ref _controlPoints, value);
+        }
+
+        public bool IsSaving
+        {
+            get => _isSaving;
+            set => SetProperty(ref _isSaving, value);
         }
 
         public string WindowTitle => _originalDischarge == null
-            ? "Добавление выпуска"
-            : "Редактирование выпуска";
+            ? "Добавление выпуска сточных вод"
+            : "Редактирование выпуска сточных вод";
 
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
         public DischargeEditViewModel(
-                        IDischargeService dischargeService,
-                        IEnterpriseService enterpriseService,
-                        IControlPointService controlPointService,
-                        Window window,
-                        Discharge? discharge = null)
+            IDischargeService dischargeService,
+            IEnterpriseService enterpriseService,
+            IControlPointService controlPointService,
+            Window window,
+            Discharge? discharge = null)
         {
             _dischargeService = dischargeService;
             _enterpriseService = enterpriseService;
@@ -147,23 +124,14 @@ namespace PDSCalculatorDesktop.ViewModels
             _window = window;
             _originalDischarge = discharge;
 
-            LoadDataAsync();
-
-            if (_originalDischarge != null)
-            {
-                Code = _originalDischarge.Code;
-                Name = _originalDischarge.Name;
-                RegistrationAt = _originalDischarge.RegistrationAt;
-                EnterpriseId = _originalDischarge.EnterpriseId;
-                ControlPointId = _originalDischarge.ControlPointId;
-            }
-
             SaveCommand = new RelayCommand(
                 execute: _ => SaveAsync(),
                 canExecute: _ => CanSave()
             );
 
             CancelCommand = new RelayCommand(_ => Cancel());
+
+            LoadDataAsync();
         }
 
         private async void LoadDataAsync()
@@ -187,6 +155,9 @@ namespace PDSCalculatorDesktop.ViewModels
 
                 if (_originalDischarge != null)
                 {
+                    Code = _originalDischarge.Code;
+                    Name = _originalDischarge.Name;
+                    RegistrationDate = _originalDischarge.RegistrationDate.Date;
                     SelectedEnterprise = Enterprises.FirstOrDefault(e => e.Id == _originalDischarge.EnterpriseId);
                     SelectedControlPoint = ControlPoints.FirstOrDefault(c => c.Id == _originalDischarge.ControlPointId);
                 }
@@ -200,28 +171,32 @@ namespace PDSCalculatorDesktop.ViewModels
 
         private bool CanSave()
         {
-            return !string.IsNullOrWhiteSpace(Code)
+            return !IsSaving
+                && !string.IsNullOrWhiteSpace(Code)
                 && !string.IsNullOrWhiteSpace(Name)
                 && SelectedEnterprise != null
-                && SelectedControlPoint != null
-                && RegistrationAt != DateTime.MinValue;
+                && SelectedControlPoint != null;
         }
 
         private async void SaveAsync()
         {
+            IsSaving = true;
             try
             {
+                var registrationDateUtc = DateTime.SpecifyKind(RegistrationDate, DateTimeKind.Utc);
+
                 if (_originalDischarge == null)
                 {
                     await _dischargeService.CreateDischargeAsync(
                         Code.Trim(),
                         Name.Trim(),
-                        DateTime.SpecifyKind(RegistrationAt, DateTimeKind.Utc),
-                        EnterpriseId,
-                        ControlPointId);
+                        registrationDateUtc,
+                        SelectedEnterprise!.Id,
+                        SelectedControlPoint!.Id
+                    );
 
                     MessageBox.Show(
-                        "Выпуск успешно добавлен!",
+                        "Выпуск сточных вод успешно добавлен!",
                         "Успех",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information
@@ -233,13 +208,13 @@ namespace PDSCalculatorDesktop.ViewModels
                         _originalDischarge.Id,
                         Code.Trim(),
                         Name.Trim(),
-                        DateTime.SpecifyKind(RegistrationAt,DateTimeKind.Utc),
-                        EnterpriseId,
-                        ControlPointId
+                        registrationDateUtc,
+                        SelectedEnterprise!.Id,
+                        SelectedControlPoint!.Id
                     );
 
                     MessageBox.Show(
-                        "Выпуск успешно обновлен!",
+                        "Выпуск сточных вод успешно обновлен!",
                         "Успех",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information
@@ -260,18 +235,20 @@ namespace PDSCalculatorDesktop.ViewModels
             }
             catch (Exception ex)
             {
-                var innerMessage = ex.InnerException != null
-                    ? $"\n\nВнутренняя ошибка: {ex.InnerException.Message}"
-                    : "";
-
                 MessageBox.Show(
-                    $"Произошла ошибка: {ex.Message}{innerMessage}",
+                    $"Произошла ошибка: {ex.Message}",
                     "Ошибка",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
                 );
             }
+            finally
+            {
+                IsSaving = false;
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
+
         private void Cancel()
         {
             _window.DialogResult = false;

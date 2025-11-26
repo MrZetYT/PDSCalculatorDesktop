@@ -1,14 +1,11 @@
-﻿using PDSCalculatorDesktop.Commands;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using PDSCalculatorDesktop.Commands;
 using PDSCalculatorDesktop.Models;
 using PDSCalculatorDesktop.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows;
-using System.Collections.ObjectModel;
 
 namespace PDSCalculatorDesktop.ViewModels
 {
@@ -18,12 +15,11 @@ namespace PDSCalculatorDesktop.ViewModels
         private readonly Substance? _originalSubstance;
         private readonly Window _window;
 
-        public ObservableCollection<HazardClass> HazardClasses;
-
         private string _code = string.Empty;
         private string _name = string.Empty;
-        private string _groupLFV = string.Empty;
-        private HazardClass _hazardClass;
+        private double _knk = 0;
+        private bool _isSaving = false;
+        private int _selectedWaterUseTypeId = 0;
 
         public string Code
         {
@@ -49,24 +45,30 @@ namespace PDSCalculatorDesktop.ViewModels
             }
         }
 
-        public string GroupLFV
+        public double KNK
         {
-            get => _groupLFV;
+            get => _knk;
             set
             {
-                if(SetProperty(ref _groupLFV, value))
+                if (SetProperty(ref _knk, value))
                 {
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
         }
 
-        public HazardClass HazardClass
+        public bool IsSaving
         {
-            get => _hazardClass;
+            get => _isSaving;
+            set => SetProperty(ref _isSaving, value);
+        }
+
+        public int SelectedWaterUseTypeId
+        {
+            get => _selectedWaterUseTypeId;
             set
             {
-                if(SetProperty(ref _hazardClass, value))
+                if (SetProperty(ref _selectedWaterUseTypeId, value))
                 {
                     CommandManager.InvalidateRequerySuggested();
                 }
@@ -74,8 +76,8 @@ namespace PDSCalculatorDesktop.ViewModels
         }
 
         public string WindowTitle => _originalSubstance == null
-            ? "Добавление вещества"
-            : "Редактирование вещества";
+            ? "Добавление загрязняющего вещества"
+            : "Редактирование загрязняющего вещества";
 
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
@@ -89,18 +91,11 @@ namespace PDSCalculatorDesktop.ViewModels
             _window = window;
             _originalSubstance = substance;
 
-            HazardClasses = new ObservableCollection<HazardClass>(
-                Enum.GetValues(typeof(HazardClass)).Cast<HazardClass>()
-            );
-
-            HazardClass = HazardClass.ModeratelyHazardous;
-
             if (_originalSubstance != null)
             {
                 Code = _originalSubstance.Code;
                 Name = _originalSubstance.Name;
-                GroupLFV = _originalSubstance.GroupLFV;
-                HazardClass = _originalSubstance.HazardClass;
+                KNK = _originalSubstance.KNK;
             }
 
             SaveCommand = new RelayCommand(
@@ -113,21 +108,26 @@ namespace PDSCalculatorDesktop.ViewModels
 
         private bool CanSave()
         {
-            return !string.IsNullOrWhiteSpace(Code)
+            return !IsSaving
+                && !string.IsNullOrWhiteSpace(Code)
                 && !string.IsNullOrWhiteSpace(Name)
-                && !string.IsNullOrWhiteSpace(GroupLFV);
+                && KNK >= 0;
         }
 
         private async void SaveAsync()
         {
+            IsSaving = true;
             try
             {
                 if (_originalSubstance == null)
                 {
-                    await _substanceService.CreateSubstanceAsync(Code.Trim(), Name.Trim(), GroupLFV.Trim(), HazardClass);
+                    await _substanceService.CreateSubstanceAsync(
+                        Code.Trim(),
+                        Name.Trim(),
+                        KNK);
 
                     MessageBox.Show(
-                        "Вещество успешно добавлено!",
+                        "Загрязняющее вещество успешно добавлено!",
                         "Успех",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information
@@ -139,12 +139,11 @@ namespace PDSCalculatorDesktop.ViewModels
                         _originalSubstance.Id,
                         Code.Trim(),
                         Name.Trim(),
-                        GroupLFV.Trim(),
-                        HazardClass
+                        KNK
                     );
 
                     MessageBox.Show(
-                        "Вещество успешно обновлено!",
+                        "Загрязняющее вещество успешно обновлено!",
                         "Успех",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information
@@ -172,7 +171,13 @@ namespace PDSCalculatorDesktop.ViewModels
                     MessageBoxImage.Error
                 );
             }
+            finally
+            {
+                IsSaving = false;
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
+
         private void Cancel()
         {
             _window.DialogResult = false;

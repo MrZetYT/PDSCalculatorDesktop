@@ -12,8 +12,8 @@
 
         public DateTime MeasurementDate { get; set; }
 
-        public required Discharge Discharge { get; set; }
+        public Discharge? Discharge { get; set; }
 
-        public required Substance Substance { get; set; }
+        public Substance? Substance { get; set; }
     }
 }

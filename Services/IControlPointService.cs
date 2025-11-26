@@ -11,8 +11,9 @@ namespace PDSCalculatorDesktop.Services
     {
         Task<ControlPoint?> GetControlPointByIdAsync(int id);
         Task<IEnumerable<ControlPoint>> GetAllControlPointsAsync();
-        Task<ControlPoint> CreateControlPointAsync(string number, string name, double distance);
-        Task<ControlPoint> UpdateControlPointAsync(int id, string number, string name, double distance);
+        Task<IEnumerable<ControlPoint>> GetAllWithWaterUseTypeAsync();
+        Task<ControlPoint> CreateControlPointAsync(string number, string name, int waterUseTypeId);
+        Task<ControlPoint> UpdateControlPointAsync(int id, string number, string name, int waterUseTypeId);
         Task<bool> DeleteControlPointAsync(int id);
     }
 }

@@ -6,8 +6,9 @@ namespace PDSCalculatorDesktop.Services
     {
         Task<Substance?> GetSubstanceByIdAsync(int id);
         Task<IEnumerable<Substance>> GetAllSubstancesAsync();
-        Task<Substance> CreateSubstanceAsync(string code, string name, string groupLFV, HazardClass hazardClass);
-        Task<Substance> UpdateSubstanceAsync(int id, string code, string name, string groupLFV, HazardClass hazardClass);
+        Task<IEnumerable<Substance>> GetAllWithCharacteristicsAsync();
+        Task<Substance> CreateSubstanceAsync(string code, string name, double knk);
+        Task<Substance> UpdateSubstanceAsync(int id, string code, string name, double knk);
         Task<bool> DeleteSubstanceAsync(int id);
     }
 }

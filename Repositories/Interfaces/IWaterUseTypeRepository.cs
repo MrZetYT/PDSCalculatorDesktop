@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace PDSCalculatorDesktop.Repositories.Interfaces
 {
-    public interface IEnterpriseRepository : IRepository<Enterprise>
+    public interface IWaterUseTypeRepository : IRepository<WaterUseType>
     {
-        Task<Enterprise?> GetByCodeAsync(string code);
-        Task<bool> HasDischargesAsync(int enterpriseId);
+        Task<WaterUseType?> GetByCodeAsync(string code);
+        Task<IEnumerable<WaterUseType>> GetAllWithCharacteristicsAsync();
     }
 }
