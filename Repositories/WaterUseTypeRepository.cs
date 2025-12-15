@@ -9,12 +9,6 @@ namespace PDSCalculatorDesktop.Repositories
     {
         public WaterUseTypeRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<WaterUseType?> GetByCodeAsync(string code)
-        {
-            return await _context.Set<WaterUseType>()
-                .FirstOrDefaultAsync(wut => wut.Code == code);
-        }
-
         public async Task<IEnumerable<WaterUseType>> GetAllWithCharacteristicsAsync()
         {
             return await _context.Set<WaterUseType>()

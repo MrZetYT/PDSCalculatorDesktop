@@ -14,13 +14,6 @@ namespace PDSCalculatorDesktop.Repositories
     {
         public ControlPointRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<ControlPoint?> GetByNumberAsync(string number)
-        {
-            return await _context.Set<ControlPoint>()
-                .Include(cp => cp.WaterUseType)
-                .FirstOrDefaultAsync(cp => cp.Number == number);
-        }
-
         public async Task<bool> HasDischargesAsync(int controlPointId)
         {
             return await _context.Discharges

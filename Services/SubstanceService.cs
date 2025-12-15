@@ -58,6 +58,16 @@ namespace PDSCalculatorDesktop.Services
 
         public async Task<bool> DeleteSubstanceAsync(int id)
         {
+            var canDeleteResult = await _repository.CanDeleteSubstanceAsync(id);
+
+            if (!canDeleteResult.CanDelete)
+            {
+                throw new InvalidOperationException(
+                    $"{canDeleteResult.Reason}\n" +
+                    $"Связанных концентраций в выпусках: {canDeleteResult.RelatedDischarges}\n" +
+                    $"Связанных фоновых концентраций: {canDeleteResult.RelatedBackgroundConc}");
+            }
+
             return await _repository.DeleteAsync(id);
         }
     }

@@ -9,14 +9,14 @@ namespace PDSCalculatorDesktop.Services
 {
     public interface IPDSCalculationService
     {
-        Task<double> CalculateIndividualPDSAsync(
+
+        Task<IEnumerable<Stage1Result>> CalculateStage1Async(
             int dischargeId,
-            int substanceId,
-            DateTime caculationDate);
+            DateTime calculationDate);
 
-        Task<IEnumerable<PDSCalculationResult>> CalculateFinalPDSAsync(int dischargeId, DateTime caculationDate);
-
-        Task<PDSCalculationResult> SaveCalculationResultAsync();
+        Task<IEnumerable<PDSCalculationResult>> CalculateFinalPDSAsync(
+            int dischargeId,
+            DateTime calculationDate);
 
         Task<IEnumerable<PDSCalculationResult>> GetCalculationHistoryAsync(int dischargeId);
     }

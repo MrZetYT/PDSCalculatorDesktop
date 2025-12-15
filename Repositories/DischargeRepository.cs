@@ -28,33 +28,6 @@ namespace PDSCalculatorDesktop.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<DischargeConcentration>> GetSubstanceConcentrationsAsync(int dischargeId)
-        {
-            return await _context.DischargeConcentrations
-                .Where(dc => dc.DischargeId == dischargeId)
-                .Include(dc => dc.Substance)
-                .OrderBy(dc => dc.Substance.Name)
-                .ThenByDescending(dc => dc.MeasurementDate)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<BackgroundConcentration>> GetNormativeIndicatorsAsync(int dischargeId)
-        {
-            var discharge = await _context.Discharges
-                .Include(d => d.ControlPoint)
-                .FirstOrDefaultAsync(d => d.Id == dischargeId);
-
-            if (discharge?.ControlPoint == null)
-                return Enumerable.Empty<BackgroundConcentration>();
-
-            return await _context.BackgroundConcentrations
-                .Where(bc => bc.ControlPointId == discharge.ControlPointId)
-                .Include(bc => bc.Substance)
-                .OrderBy(bc => bc.Substance.Name)
-                .ThenByDescending(bc => bc.MeasurementDate)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<TechnicalParameters>> GetTechnicalParametersHistoryAsync(int dischargeId)
         {
             return await _context.TechnicalParameters

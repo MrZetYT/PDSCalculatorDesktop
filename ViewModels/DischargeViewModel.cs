@@ -3,8 +3,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 using PDSCalculatorDesktop.Commands;
 using PDSCalculatorDesktop.Models;
+using PDSCalculatorDesktop.Repositories.Interfaces;
 using PDSCalculatorDesktop.Services;
 using PDSCalculatorDesktop.Views;
 
@@ -15,6 +17,10 @@ namespace PDSCalculatorDesktop.ViewModels
         private readonly IDischargeService _dischargeService;
         private readonly IEnterpriseService _enterpriseService;
         private readonly IControlPointService _controlPointService;
+        private readonly IBackgroundConcentrationService _backgroundConcentrationService;
+        private readonly IDischargeConcentrationService _dischargeConcentrationService;
+        private readonly ISubstanceService _substanceService;
+        private readonly ITechnicalParametersRepository _technicalParametersRepository;
         private Discharge? _selectedDischarge;
         private string _searchText = string.Empty;
         private bool _isLoading = false;
@@ -55,15 +61,24 @@ namespace PDSCalculatorDesktop.ViewModels
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
         public ICommand RefreshCommand { get; }
+        public ICommand ViewDetailsCommand { get; }
 
         public DischargeViewModel(
             IDischargeService dischargeService,
             IEnterpriseService enterpriseService,
-            IControlPointService controlPointService)
+            IControlPointService controlPointService,
+            IBackgroundConcentrationService backgroundConcentrationService,
+            IDischargeConcentrationService dischargeConcentrationService,
+            ISubstanceService substanceService,
+            ITechnicalParametersRepository technicalParametersRepository)
         {
             _dischargeService = dischargeService;
             _enterpriseService = enterpriseService;
             _controlPointService = controlPointService;
+            _backgroundConcentrationService = backgroundConcentrationService;
+            _dischargeConcentrationService = dischargeConcentrationService;
+            _substanceService = substanceService;
+            _technicalParametersRepository = technicalParametersRepository;
             Discharges = new ObservableCollection<Discharge>();
 
             AddCommand = new RelayCommand(_ => AddDischarge());
@@ -79,6 +94,11 @@ namespace PDSCalculatorDesktop.ViewModels
             );
 
             RefreshCommand = new RelayCommand(_ => LoadDischargesAsync());
+
+            ViewDetailsCommand = new RelayCommand(
+                execute: _ => ViewDetails(),
+                canExecute: _ => SelectedDischarge != null
+            );
 
             LoadDischargesAsync();
         }
@@ -183,6 +203,24 @@ namespace PDSCalculatorDesktop.ViewModels
                 MessageBox.Show($"Ошибка удаления: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void ViewDetails()
+        {
+            if (SelectedDischarge == null) return;
+
+            var window = new DischargeDetailsView();
+            var viewModel = new DischargeDetailsViewModel(
+                _dischargeService,
+                _backgroundConcentrationService,
+                _dischargeConcentrationService,
+                _substanceService,
+                _technicalParametersRepository,
+                SelectedDischarge
+            );
+
+            window.DataContext = viewModel;
+            window.ShowDialog();
         }
     }
 }

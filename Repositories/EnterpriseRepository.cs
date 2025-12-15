@@ -14,12 +14,6 @@ namespace PDSCalculatorDesktop.Repositories
     {
         public EnterpriseRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<Enterprise?> GetByCodeAsync(string code)
-        {
-            return await _context.Set<Enterprise>()
-                .FirstOrDefaultAsync(e => e.Code == code);
-        }
-
         public async Task<bool> HasDischargesAsync(int enterpriseId)
         {
             return await _context.Discharges

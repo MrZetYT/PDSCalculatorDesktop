@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Controls;
 using PDSCalculatorDesktop.ViewModels;
 
 namespace PDSCalculatorDesktop
@@ -25,6 +24,7 @@ namespace PDSCalculatorDesktop
                     "OpenDischargesCommand" => viewModel.OpenDischargesCommand,
                     "OpenControlPointsCommand" => viewModel.OpenControlPointsCommand,
                     "OpenSubstancesCommand" => viewModel.OpenSubstancesCommand,
+                    "OpenPDSCalculationCommand" => viewModel.OpenPDSCalculationCommand,
                     _ => null
                 };
 

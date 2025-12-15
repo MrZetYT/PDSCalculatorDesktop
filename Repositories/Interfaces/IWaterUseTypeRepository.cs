@@ -9,7 +9,6 @@ namespace PDSCalculatorDesktop.Repositories.Interfaces
 {
     public interface IWaterUseTypeRepository : IRepository<WaterUseType>
     {
-        Task<WaterUseType?> GetByCodeAsync(string code);
         Task<IEnumerable<WaterUseType>> GetAllWithCharacteristicsAsync();
     }
 }

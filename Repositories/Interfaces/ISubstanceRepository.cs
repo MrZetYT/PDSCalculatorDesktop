@@ -9,8 +9,16 @@ namespace PDSCalculatorDesktop.Repositories.Interfaces
 {
     public interface ISubstanceRepository : IRepository<Substance>
     {
-        Task<Substance?> GetByCodeAsync(string code);
         Task<IEnumerable<Substance>> GetAllWithCharacteristicsAsync();
         Task<Substance?> GetByIdWithCharacteristicsAsync(int id);
+        Task<CanDeleteSubstanceResult> CanDeleteSubstanceAsync(int id);
+    }
+
+    public class CanDeleteSubstanceResult
+    {
+        public bool CanDelete { get; set; }
+        public string Reason { get; set; } = string.Empty;
+        public long RelatedDischarges { get; set; }
+        public long RelatedBackgroundConc { get; set; }
     }
 }

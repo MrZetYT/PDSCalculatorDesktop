@@ -1,0 +1,291 @@
+﻿<Window x:Class="PDSCalculatorDesktop.Views.PDSCalculationView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Расчет предельно-допустимых сбросов (ПДС)" 
+        Height="750" 
+        Width="1500"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+
+    <materialDesign:Card Margin="20" 
+                        Padding="25"
+                        UniformCornerRadius="15"
+                        materialDesign:ElevationAssist.Elevation="Dp8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Заголовок -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,20">
+                <materialDesign:PackIcon Kind="Calculator" 
+                                        Width="32" 
+                                        Height="32"
+                                        VerticalAlignment="Center" 
+                                        Foreground="#7B3AB7"/>
+                <TextBlock Text="Расчет предельно-допустимых сбросов (ПДС)"
+                          Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                          VerticalAlignment="Center"
+                          Margin="12,0,0,0"
+                          Foreground="#7B3AB7"/>
+            </StackPanel>
+
+            <!-- Панель выбора -->
+            <materialDesign:Card Grid.Row="1" 
+                                Padding="20"
+                                Margin="0,0,0,20"
+                                UniformCornerRadius="10"
+                                Background="#F3E5F5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Выбор выпуска -->
+                    <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                        <TextBlock Text="Выпуск сточных вод:"
+                                  Style="{StaticResource MaterialDesignBody1TextBlock}"
+                                  Margin="0,0,0,8"
+                                  FontWeight="Medium"
+                                  Foreground="#7B3AB7"/>
+                        <ComboBox ItemsSource="{Binding Discharges}"
+                                 SelectedItem="{Binding SelectedDischarge}"
+                                 materialDesign:HintAssist.Hint="Выберите выпуск для расчета"
+                                 Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                 FontSize="14">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontWeight="Medium"/>
+                                        <TextBlock>
+                                            <Run Text="Код:"/>
+                                            <Run Text="{Binding Code}"/>
+                                            <Run Text=" | Предприятие:"/>
+                                            <Run Text="{Binding Enterprise.Name}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Дата расчета -->
+                    <StackPanel Grid.Column="1" Margin="0,0,20,0">
+                        <TextBlock Text="Дата расчета:"
+                                  Style="{StaticResource MaterialDesignBody1TextBlock}"
+                                  Margin="0,0,0,8"
+                                  FontWeight="Medium"
+                                  Foreground="#7B3AB7"/>
+                        <DatePicker SelectedDate="{Binding CalculationDate}"
+                                   materialDesign:HintAssist.Hint="Выберите дату"
+                                   Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                   FontSize="14"/>
+                    </StackPanel>
+
+                    <!-- Кнопка расчета -->
+                    <Button Grid.Column="2"
+                           Command="{Binding CalculateCommand}"
+                           Style="{StaticResource MaterialDesignRaisedButton}"
+                           Width="160"
+                           Height="50"
+                           VerticalAlignment="Bottom"
+                           Background="#7B3AB7"
+                           BorderBrush="#7B3AB7"
+                           materialDesign:ButtonAssist.CornerRadius="10"
+                           materialDesign:ElevationAssist.Elevation="Dp4">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Calculator" 
+                                                    Width="24" 
+                                                    Height="24"
+                                                    VerticalAlignment="Center"/>
+                            <TextBlock Text="Рассчитать" 
+                                      Margin="10,0,0,0"
+                                      VerticalAlignment="Center"
+                                      FontSize="14"
+                                      FontWeight="Medium"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </materialDesign:Card>
+
+            <!-- Результаты с вкладками для этапов -->
+            <materialDesign:Card Grid.Row="2" UniformCornerRadius="10">
+                <TabControl Style="{StaticResource MaterialDesignTabControl}">
+
+                    <!-- ЭТАП 1: Индивидуальный ПДС -->
+                    <TabItem Header="ЭТАП 1: Индивидуальный ПДС (без учета групп)">
+                        <Grid>
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                                <DataGrid ItemsSource="{Binding Stage1Results}"
+                                         AutoGenerateColumns="False"
+                                         IsReadOnly="True"
+                                         SelectionMode="Single"
+                                         CanUserAddRows="False"
+                                         CanUserDeleteRows="False"
+                                         CanUserResizeRows="False"
+                                         GridLinesVisibility="Horizontal"
+                                         HeadersVisibility="Column"
+                                         RowBackground="White"
+                                         FontSize="11"
+                                         materialDesign:DataGridAssist.CellPadding="6 4 6 4"
+                                         materialDesign:DataGridAssist.ColumnHeaderPadding="12 8 8 8">
+
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                            <Setter Property="FontSize" Value="12"/>
+                                            <Setter Property="Foreground" Value="#2196F3"/>
+                                        </Style>
+                                    </DataGrid.ColumnHeaderStyle>
+
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Код" Binding="{Binding SubstanceCode}" Width="90"/>
+                                        <DataGridTextColumn Header="Вещество" Binding="{Binding SubstanceName}" Width="180"/>
+                                        <DataGridTextColumn Header="Факт. конц." Binding="{Binding ActualConcentration, StringFormat=N4}" Width="95"/>
+                                        <DataGridTextColumn Header="Фон" Binding="{Binding BackgroundConcentration, StringFormat=N4}" Width="80"/>
+                                        <DataGridTextColumn Header="ПДК" Binding="{Binding PDK, StringFormat=N4}" Width="80"/>
+                                        <DataGridTextColumn Header="Кратн. разб." Binding="{Binding DilutionRatio, StringFormat=N2}" Width="90">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontWeight" Value="Medium"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Индив. ПДС" Binding="{Binding IndividualPDS, StringFormat=N4}" Width="110">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                    <Setter Property="Foreground" Value="#2196F3"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Группа ЛФВ" Binding="{Binding GroupLFV}" Width="130"/>
+                                        <DataGridTextColumn Header="Класс" Binding="{Binding HazardClass}" Width="55"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ScrollViewer>
+
+                            <!-- Индикатор загрузки -->
+                            <Border Background="#80FFFFFF"
+                                   Visibility="{Binding IsCalculating, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                                Width="60" Height="60" IsIndeterminate="True" Foreground="#2196F3"/>
+                                    <TextBlock Text="Расчет этапа 1..." Margin="0,15,0,0" FontSize="16" FontWeight="Medium" Foreground="#2196F3"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- ЭТАП 2: Финальный ПДС -->
+                    <TabItem Header="ЭТАП 2: Финальный ПДС (с учетом групп веществ)">
+                        <Grid>
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                                <DataGrid ItemsSource="{Binding Stage2Results}"
+                                         AutoGenerateColumns="False"
+                                         IsReadOnly="True"
+                                         SelectionMode="Single"
+                                         CanUserAddRows="False"
+                                         CanUserDeleteRows="False"
+                                         CanUserResizeRows="False"
+                                         GridLinesVisibility="Horizontal"
+                                         HeadersVisibility="Column"
+                                         RowBackground="White"
+                                         FontSize="11"
+                                         materialDesign:DataGridAssist.CellPadding="6 4 6 4"
+                                         materialDesign:DataGridAssist.ColumnHeaderPadding="12 8 8 8">
+
+                                    <DataGrid.ColumnHeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                            <Setter Property="FontSize" Value="12"/>
+                                            <Setter Property="Foreground" Value="#4CAF50"/>
+                                        </Style>
+                                    </DataGrid.ColumnHeaderStyle>
+
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                                            <Setter Property="Height" Value="36"/>
+                                            <Setter Property="Background" Value="White"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsExceeded}" Value="True">
+                                                    <Setter Property="Background" Value="#FFEBEE"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.RowStyle>
+
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Код" Binding="{Binding SubstanceCode}" Width="90"/>
+                                        <DataGridTextColumn Header="Вещество" Binding="{Binding SubstanceName}" Width="180"/>
+                                        <DataGridTextColumn Header="Индив. ПДС" Binding="{Binding IndividualPDS, StringFormat=N4}" Width="100">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="#2196F3"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Группа ЛФВ" Binding="{Binding GroupLFV}" Width="130"/>
+                                        <DataGridTextColumn Header="Класс" Binding="{Binding HazardClass}" Width="55"/>
+                                        <DataGridTextColumn Header="Сумма гр." Binding="{Binding GroupSum, StringFormat=N4}" Width="85"/>
+                                        <DataGridTextColumn Header="К. корр." Binding="{Binding CorrectionFactor, StringFormat=N4}" Width="80"/>
+                                        <DataGridTextColumn Header="Финальный ПДС" Binding="{Binding FinalPDS, StringFormat=N4}" Width="120">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                    <Setter Property="Foreground" Value="#4CAF50"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Масса (т/год)" Binding="{Binding MaxAllowedMassPerYear, StringFormat=N6}" Width="100"/>
+                                        <DataGridTemplateColumn Header="Превышение" Width="110">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <materialDesign:PackIcon Kind="AlertCircle" Width="16" Height="16" Foreground="#F44336" Margin="0,0,5,0"
+                                                                                Visibility="{Binding IsExceeded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                        <TextBlock Text="{Binding ExcessPercent, StringFormat='{}{0:F2}%'}" Foreground="#F44336" FontWeight="Medium"
+                                                                  Visibility="{Binding IsExceeded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                        <TextBlock Text="—" Foreground="Gray">
+                                                            <TextBlock.Visibility>
+                                                                <Binding Path="IsExceeded">
+                                                                    <Binding.Converter>
+                                                                        <StaticResource ResourceKey="InvertBooleanConverter"/>
+                                                                    </Binding.Converter>
+                                                                </Binding>
+                                                            </TextBlock.Visibility>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ScrollViewer>
+
+                            <!-- Индикатор загрузки -->
+                            <Border Background="#80FFFFFF"
+                                   Visibility="{Binding IsCalculating, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                                Width="60" Height="60" IsIndeterminate="True" Foreground="#4CAF50"/>
+                                    <TextBlock Text="Расчет этапа 2..." Margin="0,15,0,0" FontSize="16" FontWeight="Medium" Foreground="#4CAF50"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </materialDesign:Card>
+        </Grid>
+    </materialDesign:Card>
+</Window>

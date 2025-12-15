@@ -1,12 +1,8 @@
 ﻿using PDSCalculatorDesktop.Models;
 using PDSCalculatorDesktop.Repositories;
 using PDSCalculatorDesktop.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using PDSCalculatorDesktop.Data;
 
 namespace PDSCalculatorDesktop.Services
 {
@@ -14,13 +10,16 @@ namespace PDSCalculatorDesktop.Services
     {
         private readonly IDischargeRepository _dischargeRepository;
         private readonly ITechnicalParametersRepository _technicalParametersRepository;
+        private readonly ApplicationDbContext _context;
 
         public DischargeService(
             IDischargeRepository dischargeRepository,
-            ITechnicalParametersRepository technicalParametersRepository)
+            ITechnicalParametersRepository technicalParametersRepository,
+            ApplicationDbContext context)
         {
             _dischargeRepository = dischargeRepository;
             _technicalParametersRepository = technicalParametersRepository;
+            _context = context;
         }
 
         public async Task<Discharge?> GetDischargeByIdAsync(int id)
@@ -72,7 +71,16 @@ namespace PDSCalculatorDesktop.Services
 
         public async Task<bool> DeleteDischargeAsync(int id)
         {
-            return await _dischargeRepository.DeleteAsync(id);
+            try
+            {
+                await _context.Database.ExecuteSqlInterpolatedAsync(
+                    $"CALL delete_discharge_cascade({id}, {true})");
+                return true;
+            }
+            catch
+            {
+                return await _dischargeRepository.DeleteAsync(id);
+            }
         }
 
         public async Task<TechnicalParameters> AddTechnicalParametersAsync(

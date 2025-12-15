@@ -193,6 +193,22 @@
                     </StackPanel>
                 </Button>
 
+                <Button Command="{Binding ViewDetailsCommand}"
+                       Style="{StaticResource MaterialDesignRaisedButton}"
+                       Width="140"
+                       Height="40"
+                       Margin="0,0,12,0"
+                       Background="#4CAF50"
+                       BorderBrush="#4CAF50"
+                       materialDesign:ButtonAssist.CornerRadius="10"
+                       materialDesign:ElevationAssist.Elevation="Dp4"
+                       IsEnabled="{Binding IsLoading, Converter={StaticResource InvertBooleanConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="InformationOutline" Width="20" Height="20" VerticalAlignment="Center"/>
+                        <TextBlock Text="Подробнее" Margin="8,0,0,0" VerticalAlignment="Center" FontSize="13" FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
+
                 <Button Command="{Binding DeleteCommand}"
                        Style="{StaticResource MaterialDesignRaisedButton}"
                        Width="140"

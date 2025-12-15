@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PDSCalculatorDesktop.Models;
+using PDSCalculatorDesktop.Models.DTOs;
 
 namespace PDSCalculatorDesktop.Data
 {

@@ -13,7 +13,6 @@
         FontFamily="{DynamicResource MaterialDesignFont}">
 
     <Grid>
-        <!-- Фоновый градиент -->
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                 <GradientStop Color="#E3F2FD" Offset="0"/>
@@ -21,20 +20,14 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <!-- Основной контент -->
         <Grid Margin="40">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <!-- Заголовок -->
                 <RowDefinition Height="*"/>
-                <!-- Карточки меню -->
                 <RowDefinition Height="Auto"/>
-                <!-- Футер -->
             </Grid.RowDefinitions>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 0: Заголовок приложения -->
-            <!-- ============================================ -->
+            <!-- Заголовок -->
             <materialDesign:Card Grid.Row="0" 
                                 Padding="25"
                                 Margin="0,0,0,30"
@@ -62,9 +55,7 @@
                 </StackPanel>
             </materialDesign:Card>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 1: Карточки меню -->
-            <!-- ============================================ -->
+            <!-- Карточки меню -->
             <ScrollViewer Grid.Row="1" 
                          VerticalScrollBarVisibility="Auto"
                          HorizontalScrollBarVisibility="Disabled">
@@ -73,7 +64,7 @@
                             HorizontalAlignment="Center"
                             VerticalAlignment="Top">
 
-                    <!-- Карточка: Управление предприятиями -->
+                    <!-- Предприятия -->
                     <materialDesign:Card Margin="15"
                                     Width="380"
                                     Height="100"
@@ -126,7 +117,7 @@
                         </Grid>
                     </materialDesign:Card>
 
-                    <!-- Карточка: Управление выпусками -->
+                    <!-- Выпуски -->
                     <materialDesign:Card Margin="15"
                                     Width="380"
                                     Height="100"
@@ -179,7 +170,7 @@
                         </Grid>
                     </materialDesign:Card>
 
-                    <!-- Карточка: Контрольные створы -->
+                    <!-- Контрольные створы -->
                     <materialDesign:Card Margin="15"
                                     Width="380"
                                     Height="100"
@@ -232,7 +223,7 @@
                         </Grid>
                     </materialDesign:Card>
 
-                    <!-- Карточка: Загрязняющие вещества -->
+                    <!-- Загрязняющие вещества -->
                     <materialDesign:Card Margin="15"
                                     Width="380"
                                     Height="100"
@@ -284,15 +275,15 @@
                         </Grid>
                     </materialDesign:Card>
 
-                    <!-- Карточка: Расчет ПДС -->
+                    <!-- Расчёт ПДС -->
                     <materialDesign:Card Margin="15"
-                Width="380"
-                Height="100"
-                UniformCornerRadius="15"
-                Cursor="Hand"
-                materialDesign:ElevationAssist.Elevation="Dp4"
-                MouseDown="Card_MouseDown"
-                Tag="OpenMeasurementsCommand">
+                                         Width="380"
+                                         Height="100"
+                                         UniformCornerRadius="15"
+                                         Cursor="Hand"
+                                         materialDesign:ElevationAssist.Elevation="Dp4"
+                                         MouseDown="Card_MouseDown"
+                                         Tag="OpenPDSCalculationCommand">
                         <materialDesign:Card.Style>
                             <Style TargetType="materialDesign:Card">
                                 <Setter Property="Background" Value="White"/>
@@ -311,9 +302,10 @@
                             </Grid.ColumnDefinitions>
 
                             <Border Grid.Column="0" 
-                                    Background="#FF1AAB13" 
-                                    Width="80">
-                                <materialDesign:PackIcon Kind="Ruler" 
+                                    Background="#FF05C339" 
+                                    Width="80"
+                                    VerticalAlignment="Stretch">
+                                <materialDesign:PackIcon Kind="Calculator" 
                                                          Width="40" 
                                                          Height="40"
                                                          Foreground="White"
@@ -324,68 +316,50 @@
                             <StackPanel Grid.Column="1" 
                                         VerticalAlignment="Center"
                                         Margin="20,0,0,0">
-                                <TextBlock Text="Измерения"
-                                           FontSize="18"
-                                           FontWeight="SemiBold"
-                                           Foreground="#FF1AAB13"/>
-                                <TextBlock Text="Хранилище измерений"
-                                           FontSize="12"
-                                           Foreground="Gray"
-                                           Margin="0,5,0,0"/>
+                                <TextBlock Text="Расчёт ПДС"
+                                            FontSize="18"
+                                            FontWeight="SemiBold"
+                                            Foreground="#00897B"/>
+                                <TextBlock Text="Индивидуальный и финальный"
+                                            FontSize="12"
+                                            Foreground="Gray"
+                                            Margin="0,5,0,0"/>
                             </StackPanel>
                         </Grid>
                     </materialDesign:Card>
 
-
-                    <!-- Карточка: Отчеты -->
-                    <materialDesign:Card Margin="15"
-                                    Width="380"
-                                    Height="100"
-                                    UniformCornerRadius="15"
-                                    Cursor="Hand"
-                                    materialDesign:ElevationAssist.Elevation="Dp4"
-                                    Opacity="0.6">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Border Grid.Column="0" 
-                               Background="#6A1B9A" 
-                               Width="80">
-                                <materialDesign:PackIcon Kind="FileDocument" 
-                                                    Width="40" 
-                                                    Height="40"
-                                                    Foreground="White"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"/>
-                            </Border>
-
-                            <StackPanel Grid.Column="1" 
-                                   VerticalAlignment="Center"
-                                   Margin="20,0,0,0">
-                                <TextBlock Text="Отчеты"
-                                      FontSize="18"
-                                      FontWeight="SemiBold"
-                                      Foreground="#6A1B9A"/>
-                                <TextBlock Text="В разработке"
-                                      FontSize="12"
-                                      Foreground="Gray"
-                                      Margin="0,5,0,0"/>
-                            </StackPanel>
-                        </Grid>
-                    </materialDesign:Card>
                 </UniformGrid>
             </ScrollViewer>
 
-            <!-- ============================================ -->
-            <!-- СТРОКА 2: Футер с кнопкой выхода -->
-            <!-- ============================================ -->
+            <!-- Футер с кнопками -->
             <StackPanel Grid.Row="2" 
                        Orientation="Horizontal" 
                        HorizontalAlignment="Center"
                        Margin="0,20,0,0">
+
+                <!-- Кнопка валидации данных -->
+                <Button Command="{Binding ValidateDataIntegrityCommand}"
+                       Style="{StaticResource MaterialDesignRaisedButton}"
+                       Width="180"
+                       Height="40"
+                       Margin="0,0,15,0"
+                       Background="#FF9800"
+                       BorderBrush="#FF9800"
+                       materialDesign:ButtonAssist.CornerRadius="10">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="DatabaseCheck" 
+                                                Width="20" 
+                                                Height="20"
+                                                VerticalAlignment="Center"/>
+                        <TextBlock Text="Валидация данных" 
+                                  Margin="8,0,0,0"
+                                  VerticalAlignment="Center"
+                                  FontSize="13"
+                                  FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Кнопка выхода -->
                 <Button Command="{Binding ExitCommand}"
                        Style="{StaticResource MaterialDesignRaisedButton}"
                        Width="150"

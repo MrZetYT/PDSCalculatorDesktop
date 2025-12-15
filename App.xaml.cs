@@ -32,8 +32,6 @@ namespace PDSCalculatorDesktop
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-            //TODO: Сделать новую миграцию (чат с этим есть в Клоде)
-
             // Регистрация Repository
             services.AddScoped<IEnterpriseRepository, EnterpriseRepository>();
             services.AddScoped<IDischargeRepository, DischargeRepository>();
@@ -52,6 +50,8 @@ namespace PDSCalculatorDesktop
             services.AddScoped<IWaterUseTypeService, WaterUseTypeService>();
             services.AddScoped<IBackgroundConcentrationService, BackgroundConcentrationService>();
             services.AddScoped<IDischargeConcentrationService, DischargeConcentrationService>();
+            services.AddScoped<ICalculationDataProvider, CalculationDataProvider>();
+            services.AddScoped<IPDSCalculationService, PDSCalculationService>();
 
             // Регистрация ViewModels
             services.AddTransient<MainViewModel>();
@@ -59,6 +59,8 @@ namespace PDSCalculatorDesktop
             services.AddTransient<DischargeViewModel>();
             services.AddTransient<ControlPointViewModel>();
             services.AddTransient<SubstanceViewModel>();
+            services.AddTransient<PDSCalculationViewModel>();
+            services.AddTransient<DischargeDetailsViewModel>();
 
             // Регистрация Views
             services.AddTransient<MainWindow>();
@@ -66,10 +68,14 @@ namespace PDSCalculatorDesktop
             services.AddTransient<DischargeView>();
             services.AddTransient<ControlPointView>();
             services.AddTransient<SubstanceView>();
+            services.AddTransient<PDSCalculationView>();
+            services.AddTransient<DischargeDetailsView>();
+            services.AddTransient<TechnicalParametersEditView>();
+            services.AddTransient<ConcentrationEditView>();
 
             _serviceProvider = services.BuildServiceProvider();
 
-            // Запускаем окно управления предприятиями вместо MainWindow
+            // Запускаем главное окно
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }

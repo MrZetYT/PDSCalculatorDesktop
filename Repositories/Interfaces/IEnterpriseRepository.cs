@@ -9,7 +9,6 @@ namespace PDSCalculatorDesktop.Repositories.Interfaces
 {
     public interface IEnterpriseRepository : IRepository<Enterprise>
     {
-        Task<Enterprise?> GetByCodeAsync(string code);
         Task<bool> HasDischargesAsync(int enterpriseId);
     }
 }

@@ -14,12 +14,6 @@ namespace PDSCalculatorDesktop.Repositories
     {
         public SubstanceRepository(ApplicationDbContext context) : base(context) { }
 
-        public async Task<Substance?> GetByCodeAsync(string code)
-        {
-            return await _context.Set<Substance>()
-                .FirstOrDefaultAsync(s => s.Code == code);
-        }
-
         public async Task<IEnumerable<Substance>> GetAllWithCharacteristicsAsync()
         {
             return await _context.Set<Substance>()
@@ -34,6 +28,20 @@ namespace PDSCalculatorDesktop.Repositories
                 .Include(s => s.WaterUseCharacteristics)
                 .ThenInclude(swc => swc.WaterUseType)
                 .FirstOrDefaultAsync(s => s.Id == id);
+        }
+
+        public async Task<CanDeleteSubstanceResult> CanDeleteSubstanceAsync(int id)
+        {
+            var result = await _context.Database
+                .SqlQuery<CanDeleteSubstanceResult>($@"
+                    SELECT * FROM can_delete_substance({id})")
+                .FirstOrDefaultAsync();
+
+            return result ?? new CanDeleteSubstanceResult
+            {
+                CanDelete = false,
+                Reason = "Ошибка проверки"
+            };
         }
     }
 }
