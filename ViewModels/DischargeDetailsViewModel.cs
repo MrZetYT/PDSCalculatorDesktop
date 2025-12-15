@@ -77,7 +77,6 @@ namespace PDSCalculatorDesktop.ViewModels
         {
             try
             {
-                // Загружаем технические параметры
                 var techParams = await _dischargeService.GetTechnicalParametersHistoryAsync(_discharge.Id);
                 TechnicalParameters.Clear();
                 foreach (var param in techParams)
@@ -85,7 +84,6 @@ namespace PDSCalculatorDesktop.ViewModels
                     TechnicalParameters.Add(param);
                 }
 
-                // Загружаем концентрации веществ в выпуске
                 var dischargeDetail = await _dischargeService.GetDischargeByIdAsync(_discharge.Id);
                 if (dischargeDetail != null)
                 {
@@ -95,7 +93,6 @@ namespace PDSCalculatorDesktop.ViewModels
                         DischargeConcentrations.Add(conc);
                     }
 
-                    // Загружаем фоновые концентрации для контрольного створа
                     if (dischargeDetail.ControlPointId > 0)
                     {
                         var bgConcentrations = await _backgroundConcentrationService

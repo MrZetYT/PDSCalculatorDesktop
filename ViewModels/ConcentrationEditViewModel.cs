@@ -73,7 +73,6 @@ namespace PDSCalculatorDesktop.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
-        // Конструктор для концентраций в выпуске
         public ConcentrationEditViewModel(
             IDischargeConcentrationService dischargeConcentrationService,
             ISubstanceService substanceService,
@@ -96,7 +95,6 @@ namespace PDSCalculatorDesktop.ViewModels
             LoadDataAsync();
         }
 
-        // Конструктор для фоновых концентраций
         public ConcentrationEditViewModel(
             IBackgroundConcentrationService backgroundConcentrationService,
             ISubstanceService substanceService,
